@@ -134,3 +134,4 @@ Moreover, static allocation to external PSRAM is not yet supported
 (see [GitHub issue](https://github.com/espressif/esp-idf/issues/6162)).
 
 At this momement, the buffers are dynamicaly allocated with DMA capabilty and memory allocator handles the rest.
+# lvgl_heatter
