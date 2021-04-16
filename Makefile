@@ -5,3 +5,4 @@
 
 PROJECT_NAME := lvgl-demo
 include $(IDF_PATH)/make/project.mk
+
