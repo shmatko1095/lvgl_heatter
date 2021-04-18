@@ -1,11 +1,12 @@
 /*
- * guiTask.c
+ * exampleGuiTask.c
  *
  *  Created on: Apr 12, 2021
  *      Author: f73377
  */
 
-#include "guiTask.h"
+#include "exampleGuiTask.h"
+
 #include "lvgl_helpers.h"
 #include "esp_heap_caps.h"
 
@@ -32,7 +33,7 @@ static void create_demo_application(void);
  * you should lock on the very same semaphore! */
 static SemaphoreHandle_t xGuiSemaphore;
 
-void guiTask(void *pvParameter) {
+void exampleGuiTask(void *pvParameter) {
 
     (void) pvParameter;
     xGuiSemaphore = xSemaphoreCreateMutex();
