@@ -13,8 +13,9 @@
 /*********************
  *      INCLUDES
  *********************/
+#include "../GuiApp/include/MainScreen.h"
+
 #include "lvgl.h"
-#include "include/MainScreen.h"
 
 static void controls_create(lv_obj_t *parent);
 static void visuals_create(lv_obj_t *parent);

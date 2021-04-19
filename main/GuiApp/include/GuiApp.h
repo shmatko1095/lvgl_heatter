@@ -5,8 +5,8 @@
  *      Author: f73377
  */
 
-#ifndef MAIN_EXAMPLEGUITASK_H_
-#define MAIN_EXAMPLEGUITASK_H_
+#ifndef MAIN_GUIAPP_GUIAPP_H_
+#define MAIN_GUIAPP_GUIAPP_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,4 +18,4 @@ void guiApp(void *pvParameter);
 }
 #endif
 
-#endif /* MAIN_EXAMPLEGUITASK_H_ */
+#endif /* MAIN_GUIAPP_GUIAPP_H_ */

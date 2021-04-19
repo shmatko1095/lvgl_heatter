@@ -4,4 +4,5 @@ SRCS main.cpp
 	Model.cpp 
 	GuiApp/GuiApp.c
 	GuiApp/MainScreen.c
-INCLUDE_DIRS "")
+INCLUDE_DIRS GuiApp/include
+)

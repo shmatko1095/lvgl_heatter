@@ -5,8 +5,7 @@
  *      Author: f73377
  */
 
-#include "include/GuiApp.h"
-#include "include/MainScreen.h"
+#include "../GuiApp/include/GuiApp.h"
 
 #include "lvgl_helpers.h"
 #include "esp_heap_caps.h"
@@ -18,8 +17,13 @@
 #include "esp_system.h"
 #include "driver/gpio.h"
 #include "lvgl.h"
+#include "include/MainScreen.h"
 
 #define LV_TICK_PERIOD_MS 1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static void lv_tick_task(void *arg);
 static void create_demo_application(void);
@@ -108,4 +112,8 @@ static void lv_tick_task(void *arg) {
 static void create_demo_application(void) {
 	mainScreen();
 }
+
+#ifdef __cplusplus
+}
+#endif
 
