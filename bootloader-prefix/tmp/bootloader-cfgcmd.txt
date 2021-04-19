@@ -1,0 +1,1 @@
+cmd='/usr/bin/cmake;-DSDKCONFIG=/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/sdkconfig;-DIDF_PATH=/media/f73377/HDD/projects/heatter/esp-idf;-DIDF_TARGET=esp32;-DPYTHON_DEPS_CHECKED=1;-DPYTHON=python;-DEXTRA_COMPONENT_DIRS=/media/f73377/HDD/projects/heatter/esp-idf/components/bootloader;-DLEGACY_INCLUDE_COMMON_HEADERS=;-GUnix Makefiles;<SOURCE_DIR><SOURCE_SUBDIR>'

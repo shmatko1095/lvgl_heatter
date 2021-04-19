@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/media/f73377/HDD/projects/heatter/esp-idf/components/jsmn/include/jsmn.h
+stddef.h
+-
+
+/media/f73377/HDD/projects/heatter/esp-idf/components/jsmn/src/jsmn.c
+jsmn.h
+/media/f73377/HDD/projects/heatter/esp-idf/components/jsmn/src/jsmn.h
+

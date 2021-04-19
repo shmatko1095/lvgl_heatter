@@ -1,0 +1,20 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/media/f73377/HDD/projects/heatter/esp-idf/components/bootloader/subproject",
+    "build_dir":          "/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/bootloader",
+    "config_file":        "/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v4.4-dev-744-g1cb31e509-dirty",
+    "target":             "esp32",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/media/f73377/HDD/projects/heatter/esp-idf/components/efuse/Kconfig;/media/f73377/HDD/projects/heatter/esp-idf/components/esp32/Kconfig;/media/f73377/HDD/projects/heatter/esp-idf/components/esp_common/Kconfig;/media/f73377/HDD/projects/heatter/esp-idf/components/esp_hw_support/Kconfig;/media/f73377/HDD/projects/heatter/esp-idf/components/esp_system/Kconfig;/media/f73377/HDD/projects/heatter/esp-idf/components/freertos/Kconfig;/media/f73377/HDD/projects/heatter/esp-idf/components/log/Kconfig;/media/f73377/HDD/projects/heatter/esp-idf/components/newlib/Kconfig;/media/f73377/HDD/projects/heatter/esp-idf/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/media/f73377/HDD/projects/heatter/esp-idf/components/bootloader/Kconfig.projbuild;/media/f73377/HDD/projects/heatter/esp-idf/components/esp_rom/Kconfig.projbuild;/media/f73377/HDD/projects/heatter/esp-idf/components/esptool_py/Kconfig.projbuild;/media/f73377/HDD/projects/heatter/esp-idf/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_hw_support", "esp_rom", "esp_system", "esptool_py", "freertos", "hal", "log", "main", "micro-ecc", "newlib", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "/media/f73377/HDD/projects/heatter/esp-idf/components/bootloader", "/media/f73377/HDD/projects/heatter/esp-idf/components/bootloader_support", "/media/f73377/HDD/projects/heatter/esp-idf/components/efuse", "/media/f73377/HDD/projects/heatter/esp-idf/components/esp32", "/media/f73377/HDD/projects/heatter/esp-idf/components/esp_common", "/media/f73377/HDD/projects/heatter/esp-idf/components/esp_hw_support", "/media/f73377/HDD/projects/heatter/esp-idf/components/esp_rom", "/media/f73377/HDD/projects/heatter/esp-idf/components/esp_system", "/media/f73377/HDD/projects/heatter/esp-idf/components/esptool_py", "/media/f73377/HDD/projects/heatter/esp-idf/components/freertos", "/media/f73377/HDD/projects/heatter/esp-idf/components/hal", "/media/f73377/HDD/projects/heatter/esp-idf/components/log", "/media/f73377/HDD/projects/heatter/esp-idf/components/bootloader/subproject/main", "/media/f73377/HDD/projects/heatter/esp-idf/components/bootloader/subproject/components/micro-ecc", "/media/f73377/HDD/projects/heatter/esp-idf/components/newlib", "/media/f73377/HDD/projects/heatter/esp-idf/components/partition_table", "/media/f73377/HDD/projects/heatter/esp-idf/components/soc", "/media/f73377/HDD/projects/heatter/esp-idf/components/spi_flash", "/media/f73377/HDD/projects/heatter/esp-idf/components/xtensa", "" ]
+}

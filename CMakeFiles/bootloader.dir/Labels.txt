@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/CMakeFiles/bootloader
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/CMakeFiles/bootloader.rule
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/CMakeFiles/bootloader-complete.rule
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
