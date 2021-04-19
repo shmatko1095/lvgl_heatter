@@ -80,6 +80,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/GuiApp.c.obj
  /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/GuiApp.c
  /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/include/GuiApp.h
  /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/include/MainScreen.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/Types.h
  components/lvgl/lvgl.h
  components/lvgl/src/lv_api_map.h
  components/lvgl/src/lv_conf_internal.h
@@ -192,8 +193,108 @@ esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/GuiApp.c.obj
  config/sdkconfig.h
 esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj
  /media/f73377/HDD/projects/heatter/esp-idf/components/esp_common/include/esp_attr.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_ex_conf.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/lv_examples.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_demo_benchmark/lv_demo_benchmark.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_demo_keypad_encoder/lv_demo_keypad_encoder.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_demo_music/lv_demo_music.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_demo_printer/lv_demo_printer.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_demo_stress/lv_demo_stress.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_demo_widgets/lv_demo_widgets.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_ex_get_started/lv_ex_get_started.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_ex_style/lv_ex_style.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/components/lv_examples/lv_examples/src/lv_ex_widgets/lv_ex_widgets.h
  /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/MainScreen.c
  /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/include/MainScreen.h
+ components/lv_examples/lv_ex_conf.h
+ components/lvgl/lvgl.h
+ components/lvgl/src/lv_api_map.h
+ components/lvgl/src/lv_conf_internal.h
+ components/lvgl/src/lv_conf_kconfig.h
+ components/lvgl/src/lv_core/lv_disp.h
+ components/lvgl/src/lv_core/lv_group.h
+ components/lvgl/src/lv_core/lv_indev.h
+ components/lvgl/src/lv_core/lv_obj.h
+ components/lvgl/src/lv_core/lv_obj_style_dec.h
+ components/lvgl/src/lv_core/lv_refr.h
+ components/lvgl/src/lv_core/lv_style.h
+ components/lvgl/src/lv_draw/lv_draw.h
+ components/lvgl/src/lv_draw/lv_draw_arc.h
+ components/lvgl/src/lv_draw/lv_draw_blend.h
+ components/lvgl/src/lv_draw/lv_draw_img.h
+ components/lvgl/src/lv_draw/lv_draw_label.h
+ components/lvgl/src/lv_draw/lv_draw_line.h
+ components/lvgl/src/lv_draw/lv_draw_mask.h
+ components/lvgl/src/lv_draw/lv_draw_rect.h
+ components/lvgl/src/lv_draw/lv_draw_triangle.h
+ components/lvgl/src/lv_draw/lv_img_buf.h
+ components/lvgl/src/lv_draw/lv_img_cache.h
+ components/lvgl/src/lv_draw/lv_img_decoder.h
+ components/lvgl/src/lv_font/lv_font.h
+ components/lvgl/src/lv_font/lv_font_fmt_txt.h
+ components/lvgl/src/lv_font/lv_font_loader.h
+ components/lvgl/src/lv_font/lv_symbol_def.h
+ components/lvgl/src/lv_hal/lv_hal.h
+ components/lvgl/src/lv_hal/lv_hal_disp.h
+ components/lvgl/src/lv_hal/lv_hal_indev.h
+ components/lvgl/src/lv_hal/lv_hal_tick.h
+ components/lvgl/src/lv_misc/lv_anim.h
+ components/lvgl/src/lv_misc/lv_area.h
+ components/lvgl/src/lv_misc/lv_async.h
+ components/lvgl/src/lv_misc/lv_bidi.h
+ components/lvgl/src/lv_misc/lv_color.h
+ components/lvgl/src/lv_misc/lv_debug.h
+ components/lvgl/src/lv_misc/lv_fs.h
+ components/lvgl/src/lv_misc/lv_ll.h
+ components/lvgl/src/lv_misc/lv_log.h
+ components/lvgl/src/lv_misc/lv_math.h
+ components/lvgl/src/lv_misc/lv_mem.h
+ components/lvgl/src/lv_misc/lv_printf.h
+ components/lvgl/src/lv_misc/lv_task.h
+ components/lvgl/src/lv_misc/lv_txt.h
+ components/lvgl/src/lv_misc/lv_types.h
+ components/lvgl/src/lv_themes/lv_theme.h
+ components/lvgl/src/lv_themes/lv_theme_empty.h
+ components/lvgl/src/lv_themes/lv_theme_material.h
+ components/lvgl/src/lv_themes/lv_theme_mono.h
+ components/lvgl/src/lv_themes/lv_theme_template.h
+ components/lvgl/src/lv_widgets/lv_arc.h
+ components/lvgl/src/lv_widgets/lv_bar.h
+ components/lvgl/src/lv_widgets/lv_btn.h
+ components/lvgl/src/lv_widgets/lv_btnmatrix.h
+ components/lvgl/src/lv_widgets/lv_calendar.h
+ components/lvgl/src/lv_widgets/lv_canvas.h
+ components/lvgl/src/lv_widgets/lv_chart.h
+ components/lvgl/src/lv_widgets/lv_checkbox.h
+ components/lvgl/src/lv_widgets/lv_cont.h
+ components/lvgl/src/lv_widgets/lv_cpicker.h
+ components/lvgl/src/lv_widgets/lv_dropdown.h
+ components/lvgl/src/lv_widgets/lv_gauge.h
+ components/lvgl/src/lv_widgets/lv_img.h
+ components/lvgl/src/lv_widgets/lv_imgbtn.h
+ components/lvgl/src/lv_widgets/lv_keyboard.h
+ components/lvgl/src/lv_widgets/lv_label.h
+ components/lvgl/src/lv_widgets/lv_led.h
+ components/lvgl/src/lv_widgets/lv_line.h
+ components/lvgl/src/lv_widgets/lv_linemeter.h
+ components/lvgl/src/lv_widgets/lv_list.h
+ components/lvgl/src/lv_widgets/lv_msgbox.h
+ components/lvgl/src/lv_widgets/lv_objmask.h
+ components/lvgl/src/lv_widgets/lv_page.h
+ components/lvgl/src/lv_widgets/lv_roller.h
+ components/lvgl/src/lv_widgets/lv_slider.h
+ components/lvgl/src/lv_widgets/lv_spinbox.h
+ components/lvgl/src/lv_widgets/lv_spinner.h
+ components/lvgl/src/lv_widgets/lv_switch.h
+ components/lvgl/src/lv_widgets/lv_table.h
+ components/lvgl/src/lv_widgets/lv_tabview.h
+ components/lvgl/src/lv_widgets/lv_textarea.h
+ components/lvgl/src/lv_widgets/lv_tileview.h
+ components/lvgl/src/lv_widgets/lv_win.h
+ config/sdkconfig.h
+esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj
+ /media/f73377/HDD/projects/heatter/esp-idf/components/esp_common/include/esp_attr.h
+ /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/bg.c
  components/lvgl/lvgl.h
  components/lvgl/src/lv_api_map.h
  components/lvgl/src/lv_conf_internal.h
@@ -306,11 +407,9 @@ esp-idf/main/CMakeFiles/__idf_main.dir/main.cpp.obj
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/FreeRTOS.h
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/FreeRTOSConfig.h
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/deprecated_definitions.h
- /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/list.h
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/mpu_wrappers.h
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/portable.h
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/projdefs.h
- /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/task.h
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/port/xtensa/include/freertos/portbenchmark.h
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/port/xtensa/include/freertos/portmacro.h
  /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/port/xtensa/include/freertos/portmacro_priv.h

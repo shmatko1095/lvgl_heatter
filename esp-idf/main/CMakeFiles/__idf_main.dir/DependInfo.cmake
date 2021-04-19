@@ -7,6 +7,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_C
   "/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/GuiApp.c" "/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/GuiApp.c.obj"
   "/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/MainScreen.c" "/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj"
+  "/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/bg.c" "/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

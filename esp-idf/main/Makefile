@@ -252,6 +252,33 @@ GuiApp/MainScreen.c.s:
 	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy && $(MAKE) -f esp-idf/main/CMakeFiles/__idf_main.dir/build.make esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.s
 .PHONY : GuiApp/MainScreen.c.s
 
+GuiApp/bg.obj: GuiApp/bg.c.obj
+
+.PHONY : GuiApp/bg.obj
+
+# target to build an object file
+GuiApp/bg.c.obj:
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy && $(MAKE) -f esp-idf/main/CMakeFiles/__idf_main.dir/build.make esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj
+.PHONY : GuiApp/bg.c.obj
+
+GuiApp/bg.i: GuiApp/bg.c.i
+
+.PHONY : GuiApp/bg.i
+
+# target to preprocess a source file
+GuiApp/bg.c.i:
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy && $(MAKE) -f esp-idf/main/CMakeFiles/__idf_main.dir/build.make esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.i
+.PHONY : GuiApp/bg.c.i
+
+GuiApp/bg.s: GuiApp/bg.c.s
+
+.PHONY : GuiApp/bg.s
+
+# target to generate assembly for a file
+GuiApp/bg.c.s:
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy && $(MAKE) -f esp-idf/main/CMakeFiles/__idf_main.dir/build.make esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.s
+.PHONY : GuiApp/bg.c.s
+
 Model.obj: Model.cpp.obj
 
 .PHONY : Model.obj
@@ -328,6 +355,9 @@ help:
 	@echo "... GuiApp/MainScreen.obj"
 	@echo "... GuiApp/MainScreen.i"
 	@echo "... GuiApp/MainScreen.s"
+	@echo "... GuiApp/bg.obj"
+	@echo "... GuiApp/bg.i"
+	@echo "... GuiApp/bg.s"
 	@echo "... Model.obj"
 	@echo "... Model.i"
 	@echo "... Model.s"

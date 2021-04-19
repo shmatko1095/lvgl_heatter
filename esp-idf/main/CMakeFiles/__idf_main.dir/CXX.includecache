@@ -262,8 +262,6 @@ portmacro.h
 ../../Source/portable/IAR/78K0R/portmacro.h
 /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/Source/portable/IAR/78K0R/portmacro.h
 
-/media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/list.h
-
 /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/mpu_wrappers.h
 
 /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/portable.h
@@ -275,12 +273,6 @@ mpu_wrappers.h
 /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/mpu_wrappers.h
 
 /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/projdefs.h
-
-/media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/task.h
-list.h
-/media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/list.h
-freertos/portmacro.h
-/media/f73377/HDD/projects/heatter/esp-idf/components/freertos/include/freertos/freertos/portmacro.h
 
 /media/f73377/HDD/projects/heatter/esp-idf/components/freertos/port/xtensa/include/freertos/portbenchmark.h
 
@@ -563,6 +555,10 @@ Model.hpp
 /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/Model.hpp
 
 /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/include/GuiApp.h
+../../Types.h
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/Types.h
+freertos/FreeRTOS.h
+/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/include/freertos/FreeRTOS.h
 
 /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/Model.cpp
 Model.hpp
@@ -583,12 +579,6 @@ sys/types.h
 /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/main.cpp
 GuiApp/include/GuiApp.h
 /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/include/GuiApp.h
-freertos/FreeRTOS.h
-/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/freertos/FreeRTOS.h
-freertos/task.h
-/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/freertos/task.h
-string.h
--
 Model.hpp
 /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/Model.hpp
 lvgl.h

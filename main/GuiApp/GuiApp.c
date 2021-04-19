@@ -10,7 +10,6 @@
 #include "lvgl_helpers.h"
 #include "esp_heap_caps.h"
 
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_freertos_hooks.h"
 #include "freertos/semphr.h"
@@ -25,30 +24,68 @@
 extern "C" {
 #endif
 
+static void run();
+static void lvgl_init();
 static void lv_tick_task(void *arg);
-static void create_demo_application(void);
 
 /* Creates a semaphore to handle concurrent call to lvgl stuff
  * If you wish to call *any* lvgl function from other threads/tasks
  * you should lock on the very same semaphore! */
 static SemaphoreHandle_t xGuiSemaphore;
+static lv_color_t *buf1;
+static lv_color_t *buf2;
 
-void guiApp(void *pvParameter) {
 
-	(void) pvParameter;
+static lv_obj_t* mainScreen;
+
+void guiApp_init() {
 	xGuiSemaphore = xSemaphoreCreateMutex();
+	lvgl_init();
 
+
+	mainScreen = mainScreen_create();
+	lv_scr_load(mainScreen);
+}
+
+void guiApp_start(const uint32_t usStackDepth, UBaseType_t uxPriority,
+		const BaseType_t xCoreID) {
+	xTaskCreatePinnedToCore(run, "gui_run", 4096 * 2, NULL, 0, NULL, 1);
+}
+
+static void run(void *pvParameter) {
+	(void) pvParameter;
+
+	while (1) {
+		/* Delay 1 tick (assumes FreeRTOS tick is 10ms */
+		vTaskDelay(pdMS_TO_TICKS(10));
+
+		/* Try to take the semaphore, call lvgl related function on success */
+		if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
+			lv_task_handler();
+			xSemaphoreGive(xGuiSemaphore);
+		}
+	}
+
+	/* A task should NEVER return */
+	free(buf1);
+#ifndef CONFIG_LV_TFT_DISPLAY_MONOCHROME
+	free(buf2);
+#endif
+	vTaskDelete(NULL);
+}
+
+static void lvgl_init() {
 	lv_init();
 
 	/* Initialize SPI or I2C bus used by the drivers */
 	lvgl_driver_init();
 
-	lv_color_t *buf1 = (lv_color_t*) heap_caps_malloc(
-			DISP_BUF_SIZE * sizeof(lv_color_t), MALLOC_CAP_DMA);
+	buf1 = (lv_color_t*) heap_caps_malloc(
+	DISP_BUF_SIZE * sizeof(lv_color_t), MALLOC_CAP_DMA);
 	assert(buf1 != NULL);
 
-	lv_color_t *buf2 = (lv_color_t*) heap_caps_malloc(
-			DISP_BUF_SIZE * sizeof(lv_color_t), MALLOC_CAP_DMA);
+	buf2 = (lv_color_t*) heap_caps_malloc(
+	DISP_BUF_SIZE * sizeof(lv_color_t), MALLOC_CAP_DMA);
 	assert(buf2 != NULL);
 
 	static lv_disp_buf_t disp_buf;
@@ -80,37 +117,12 @@ void guiApp(void *pvParameter) {
 	ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_timer));
 	ESP_ERROR_CHECK(
 			esp_timer_start_periodic(periodic_timer, LV_TICK_PERIOD_MS * 1000));
-
-	/* Create the demo application */
-	create_demo_application();
-
-	while (1) {
-		/* Delay 1 tick (assumes FreeRTOS tick is 10ms */
-		vTaskDelay(pdMS_TO_TICKS(10));
-
-		/* Try to take the semaphore, call lvgl related function on success */
-		if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
-			lv_task_handler();
-			xSemaphoreGive(xGuiSemaphore);
-		}
-	}
-
-	/* A task should NEVER return */
-	free(buf1);
-#ifndef CONFIG_LV_TFT_DISPLAY_MONOCHROME
-	free(buf2);
-#endif
-	vTaskDelete(NULL);
 }
 
 static void lv_tick_task(void *arg) {
 	(void) arg;
 
 	lv_tick_inc(LV_TICK_PERIOD_MS);
-}
-
-static void create_demo_application(void) {
-	mainScreen();
 }
 
 #ifdef __cplusplus

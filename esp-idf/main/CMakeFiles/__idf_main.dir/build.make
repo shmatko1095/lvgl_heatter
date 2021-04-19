@@ -177,13 +177,38 @@ esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj.provides: esp-idf
 esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj.provides.build: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj
 
 
+esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj: esp-idf/main/CMakeFiles/__idf_main.dir/flags.make
+esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj: main/GuiApp/bg.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj"
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/main && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj   -c /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/bg.c
+
+esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/__idf_main.dir/GuiApp/bg.c.i"
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/main && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/bg.c > CMakeFiles/__idf_main.dir/GuiApp/bg.c.i
+
+esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/__idf_main.dir/GuiApp/bg.c.s"
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/main && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/main/GuiApp/bg.c -o CMakeFiles/__idf_main.dir/GuiApp/bg.c.s
+
+esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj.requires:
+
+.PHONY : esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj.requires
+
+esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj.provides: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj.requires
+	$(MAKE) -f esp-idf/main/CMakeFiles/__idf_main.dir/build.make esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj.provides.build
+.PHONY : esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj.provides
+
+esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj.provides.build: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj
+
+
 # Object files for target __idf_main
 __idf_main_OBJECTS = \
 "CMakeFiles/__idf_main.dir/main.cpp.obj" \
 "CMakeFiles/__idf_main.dir/Application.cpp.obj" \
 "CMakeFiles/__idf_main.dir/Model.cpp.obj" \
 "CMakeFiles/__idf_main.dir/GuiApp/GuiApp.c.obj" \
-"CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj"
+"CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj" \
+"CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj"
 
 # External object files for target __idf_main
 __idf_main_EXTERNAL_OBJECTS =
@@ -193,9 +218,10 @@ esp-idf/main/libmain.a: esp-idf/main/CMakeFiles/__idf_main.dir/Application.cpp.o
 esp-idf/main/libmain.a: esp-idf/main/CMakeFiles/__idf_main.dir/Model.cpp.obj
 esp-idf/main/libmain.a: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/GuiApp.c.obj
 esp-idf/main/libmain.a: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj
+esp-idf/main/libmain.a: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj
 esp-idf/main/libmain.a: esp-idf/main/CMakeFiles/__idf_main.dir/build.make
 esp-idf/main/libmain.a: esp-idf/main/CMakeFiles/__idf_main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking C static library libmain.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking C static library libmain.a"
 	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/main && $(CMAKE_COMMAND) -P CMakeFiles/__idf_main.dir/cmake_clean_target.cmake
 	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/main && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/__idf_main.dir/link.txt --verbose=$(VERBOSE)
 
@@ -209,6 +235,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/requires: esp-idf/main/CMakeFiles/__idf_m
 esp-idf/main/CMakeFiles/__idf_main.dir/requires: esp-idf/main/CMakeFiles/__idf_main.dir/Model.cpp.obj.requires
 esp-idf/main/CMakeFiles/__idf_main.dir/requires: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/GuiApp.c.obj.requires
 esp-idf/main/CMakeFiles/__idf_main.dir/requires: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj.requires
+esp-idf/main/CMakeFiles/__idf_main.dir/requires: esp-idf/main/CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj.requires
 
 .PHONY : esp-idf/main/CMakeFiles/__idf_main.dir/requires
 

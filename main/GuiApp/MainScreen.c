@@ -13,9 +13,8 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "../GuiApp/include/MainScreen.h"
-
-#include "lvgl.h"
+#include "include/MainScreen.h"
+#include "../../components/lv_examples/lv_examples/lv_examples.h"
 
 static void controls_create(lv_obj_t *parent);
 static void visuals_create(lv_obj_t *parent);
@@ -46,56 +45,103 @@ static lv_obj_t *t3;
 static lv_obj_t *kb;
 
 static lv_style_t style_box;
+static lv_obj_t *lmeter;
 
-/**********************
- *      MACROS
- **********************/
+LV_IMG_DECLARE(bg);
 
-/**********************
- *   GLOBAL FUNCTIONS
- **********************/
+static enum {
+	line_cnt = 60,
+};
 
-void mainScreen(void) {
-	tv = lv_tabview_create(lv_scr_act(), NULL);
-#if LV_USE_THEME_MATERIAL
-	if (LV_THEME_DEFAULT_INIT == lv_theme_material_init) {
-		lv_disp_size_t disp_size = lv_disp_get_size_category(NULL);
-		if (disp_size >= LV_DISP_SIZE_MEDIUM) {
-			lv_obj_set_style_local_pad_left(tv, LV_TABVIEW_PART_TAB_BG,
-					LV_STATE_DEFAULT, LV_HOR_RES / 2);
-			lv_obj_t *sw = lv_switch_create(lv_scr_act(), NULL);
-			if (lv_theme_get_flags() & LV_THEME_MATERIAL_FLAG_DARK)
-				lv_switch_on(sw, LV_ANIM_OFF);
-			lv_obj_set_event_cb(sw, color_chg_event_cb);
-			lv_obj_set_pos(sw, LV_DPX(10), LV_DPX(10));
-			lv_obj_set_style_local_value_str(sw, LV_SWITCH_PART_BG,
-					LV_STATE_DEFAULT, "Dark");
-			lv_obj_set_style_local_value_align(sw, LV_SWITCH_PART_BG,
-					LV_STATE_DEFAULT, LV_ALIGN_OUT_RIGHT_MID);
-			lv_obj_set_style_local_value_ofs_x(sw, LV_SWITCH_PART_BG,
-					LV_STATE_DEFAULT, LV_DPI / 35);
-		}
-	}
-#endif
+static enum colors {
+	linemeter_start_color = 0xffbf00,
+	linemeter_end_color = 0xff8000,
+	default_color = 0xe6e6e6,
+	bg_color = 0x1f212d,
+};
 
-	t1 = lv_tabview_add_tab(tv, "Controls");
-	t2 = lv_tabview_add_tab(tv, "Visuals");
-	t3 = lv_tabview_add_tab(tv, "Selectors");
+static lv_obj_t *mainScreen;
+
+lv_obj_t* mainScreen_background_create(lv_obj_t *par) {
+	lv_obj_t *obj = lv_img_create(par, NULL);
+	lv_img_set_src(obj, &bg);
+	lv_obj_align(obj, NULL, LV_ALIGN_CENTER, 0, 0);
+	return obj;
+}
+
+lv_obj_t* mainScreen_linemeter_create(lv_obj_t *par) {
+	lv_obj_t *obj = lv_linemeter_create(par, NULL);
+	static lv_style_t style_box;
 
 	lv_style_init(&style_box);
-	lv_style_set_value_align(&style_box, LV_STATE_DEFAULT,
-			LV_ALIGN_OUT_TOP_LEFT);
-	lv_style_set_value_ofs_y(&style_box, LV_STATE_DEFAULT, -LV_DPX(10));
-	lv_style_set_margin_top(&style_box, LV_STATE_DEFAULT, LV_DPX(30));
+	lv_style_set_line_width(&style_box, LV_STATE_DEFAULT, 2);
+	lv_style_set_scale_end_line_width(&style_box, LV_STATE_DEFAULT, 2);
 
-	controls_create(t1);
-	visuals_create(t2);
-	selectors_create(t3);
+	lv_style_set_line_color		 (&style_box, LV_STATE_DEFAULT, lv_color_hex(linemeter_start_color)); //start lines
+	lv_style_set_scale_grad_color(&style_box, LV_STATE_DEFAULT, lv_color_hex(linemeter_end_color)); //last active lines
+	lv_style_set_scale_end_color (&style_box, LV_STATE_DEFAULT, lv_color_hex(default_color)); //inactive lines
+//	lv_style_set_bg_opa			 (&style_box, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+	lv_style_set_bg_color		 (&style_box, LV_STATE_DEFAULT, lv_color_hex(bg_color));
 
-#if LV_DEMO_WIDGETS_SLIDESHOW
-    lv_task_create(tab_changer_task_cb, 8000, LV_TASK_PRIO_LOW, NULL);
-#endif
+	lv_linemeter_set_range(obj, 0, 100); /*Set the range*/
+	lv_linemeter_set_value(obj, 80); /*Set the current value*/
+	lv_linemeter_set_scale(obj, 240, line_cnt); /*Set the angle and number of lines*/
 
+	lv_obj_set_size(obj, LV_HOR_RES, LV_VER_RES);
+	lv_obj_align(obj, NULL, LV_ALIGN_CENTER, 0, 0);
+	lv_obj_add_style(obj, LV_LINEMETER_PART_MAIN, &style_box);
+	lv_obj_set_style_local_value_str(obj, LV_LINEMETER_PART_MAIN,
+			LV_STATE_DEFAULT, "Line meter");
+
+	return obj;
+}
+
+lv_obj_t* mainScreen_create() {
+	mainScreen = lv_obj_create(NULL, NULL);
+//	lv_obj_t *bg = mainScreen_background_create(mainScreen);
+	lmeter = mainScreen_linemeter_create(mainScreen);
+
+//	tv = lv_tabview_create(lv_scr_act(), NULL);
+//#if LV_USE_THEME_MATERIAL
+//	if (LV_THEME_DEFAULT_INIT == lv_theme_material_init) {
+//		lv_disp_size_t disp_size = lv_disp_get_size_category(NULL);
+//		if (disp_size >= LV_DISP_SIZE_MEDIUM) {
+//			lv_obj_set_style_local_pad_left(tv, LV_TABVIEW_PART_TAB_BG,
+//					LV_STATE_DEFAULT, LV_HOR_RES / 2);
+//			lv_obj_t *sw = lv_switch_create(lv_scr_act(), NULL);
+//			if (lv_theme_get_flags() & LV_THEME_MATERIAL_FLAG_DARK)
+//				lv_switch_on(sw, LV_ANIM_OFF);
+//			lv_obj_set_event_cb(sw, color_chg_event_cb);
+//			lv_obj_set_pos(sw, LV_DPX(10), LV_DPX(10));
+//			lv_obj_set_style_local_value_str(sw, LV_SWITCH_PART_BG,
+//					LV_STATE_DEFAULT, "Dark");
+//			lv_obj_set_style_local_value_align(sw, LV_SWITCH_PART_BG,
+//					LV_STATE_DEFAULT, LV_ALIGN_OUT_RIGHT_MID);
+//			lv_obj_set_style_local_value_ofs_x(sw, LV_SWITCH_PART_BG,
+//					LV_STATE_DEFAULT, LV_DPI / 35);
+//		}
+//	}
+//#endif
+//
+//	t1 = lv_tabview_add_tab(tv, "Controls");
+//	t2 = lv_tabview_add_tab(tv, "Visuals");
+//	t3 = lv_tabview_add_tab(tv, "Selectors");
+//
+//	lv_style_init(&style_box);
+//	lv_style_set_value_align(&style_box, LV_STATE_DEFAULT,
+//			LV_ALIGN_OUT_TOP_LEFT);
+//	lv_style_set_value_ofs_y(&style_box, LV_STATE_DEFAULT, -LV_DPX(10));
+//	lv_style_set_margin_top(&style_box, LV_STATE_DEFAULT, LV_DPX(30));
+//
+//	controls_create(t1);
+//	visuals_create(t2);
+//	selectors_create(t3);
+//
+//#if LV_DEMO_WIDGETS_SLIDESHOW
+//    lv_task_create(tab_changer_task_cb, 8000, LV_TASK_PRIO_LOW, NULL);
+//#endif
+
+	return mainScreen;
 }
 
 /**********************
@@ -258,9 +304,9 @@ static void visuals_create(lv_obj_t *parent) {
 				LV_CHART_AXIS_DRAW_LAST_TICK);
 	}
 	lv_chart_series_t *s1 = lv_chart_add_series(chart,
-			LV_THEME_DEFAULT_COLOR_PRIMARY);
+	LV_THEME_DEFAULT_COLOR_PRIMARY);
 	lv_chart_series_t *s2 = lv_chart_add_series(chart,
-			LV_THEME_DEFAULT_COLOR_SECONDARY);
+	LV_THEME_DEFAULT_COLOR_SECONDARY);
 
 	lv_chart_set_next(chart, s1, 10);
 	lv_chart_set_next(chart, s1, 90);
@@ -406,9 +452,9 @@ static void visuals_create(lv_obj_t *parent) {
 	lv_obj_set_style_local_value_align(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT,
 			LV_ALIGN_OUT_BOTTOM_MID);
 	lv_obj_set_style_local_value_ofs_y(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT,
-			LV_DPI / 20);
+	LV_DPI / 20);
 	lv_obj_set_style_local_margin_bottom(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT,
-			LV_DPI / 7);
+	LV_DPI / 7);
 	lv_obj_align(bar, NULL, LV_ALIGN_CENTER, 0, 0);
 
 	lv_obj_t *led_h = lv_cont_create(parent, NULL);
@@ -530,13 +576,12 @@ static void selectors_create(lv_obj_t *parent) {
 	lv_obj_set_size(list, grid_w, grid_h);
 
 	const char *txts[] = { LV_SYMBOL_SAVE, "Save", LV_SYMBOL_CUT, "Cut",
-			LV_SYMBOL_COPY, "Copy",
-			LV_SYMBOL_OK,
-			"This is a substantially long text to scroll on the list",
-			LV_SYMBOL_EDIT, "Edit", LV_SYMBOL_WIFI, "Wifi",
-			LV_SYMBOL_BLUETOOTH, "Bluetooth", LV_SYMBOL_GPS, "GPS",
-			LV_SYMBOL_USB, "USB",
-			LV_SYMBOL_SD_CARD, "SD card", LV_SYMBOL_CLOSE, "Close", NULL };
+	LV_SYMBOL_COPY, "Copy",
+	LV_SYMBOL_OK, "This is a substantially long text to scroll on the list",
+	LV_SYMBOL_EDIT, "Edit", LV_SYMBOL_WIFI, "Wifi",
+	LV_SYMBOL_BLUETOOTH, "Bluetooth", LV_SYMBOL_GPS, "GPS",
+	LV_SYMBOL_USB, "USB",
+	LV_SYMBOL_SD_CARD, "SD card", LV_SYMBOL_CLOSE, "Close", NULL };
 
 	uint32_t i;
 	for (i = 0; txts[i] != NULL; i += 2) {

@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/__idf_main.dir/Model.cpp.obj"
   "CMakeFiles/__idf_main.dir/GuiApp/GuiApp.c.obj"
   "CMakeFiles/__idf_main.dir/GuiApp/MainScreen.c.obj"
+  "CMakeFiles/__idf_main.dir/GuiApp/bg.c.obj"
   "libmain.pdb"
   "libmain.a"
 )

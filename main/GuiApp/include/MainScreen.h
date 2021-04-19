@@ -8,11 +8,13 @@
 #ifndef MAIN_GUIAPP_MAINSCREEN_H_
 #define MAIN_GUIAPP_MAINSCREEN_H_
 
+#include "lvgl.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void mainScreen(void);
+lv_obj_t * mainScreen_create();
 
 #ifdef __cplusplus
 } /* extern "C" */
