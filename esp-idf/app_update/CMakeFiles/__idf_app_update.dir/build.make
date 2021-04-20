@@ -84,15 +84,15 @@ esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_ota_ops.c.obj.provides.bu
 esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_app_desc.c.obj: esp-idf/app_update/CMakeFiles/__idf_app_update.dir/flags.make
 esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_app_desc.c.obj: /media/f73377/HDD/projects/heatter/esp-idf/components/app_update/esp_app_desc.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/f73377/HDD/projects/heatter/lv_port_esp32_copy/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_app_desc.c.obj"
-	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/app_update && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) -D PROJECT_NAME=\"lvgl-demo\" -DPROJECT_VER=\"v2.0-69-g8cfbf1c-dirty\" $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/__idf_app_update.dir/esp_app_desc.c.obj   -c /media/f73377/HDD/projects/heatter/esp-idf/components/app_update/esp_app_desc.c
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/app_update && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) -D PROJECT_NAME=\"lvgl-demo\" -DPROJECT_VER=\"v2.0-69-g445a93c-dirty\" $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/__idf_app_update.dir/esp_app_desc.c.obj   -c /media/f73377/HDD/projects/heatter/esp-idf/components/app_update/esp_app_desc.c
 
 esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_app_desc.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/__idf_app_update.dir/esp_app_desc.c.i"
-	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/app_update && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) -D PROJECT_NAME=\"lvgl-demo\" -DPROJECT_VER=\"v2.0-69-g8cfbf1c-dirty\" $(C_INCLUDES) $(C_FLAGS) -E /media/f73377/HDD/projects/heatter/esp-idf/components/app_update/esp_app_desc.c > CMakeFiles/__idf_app_update.dir/esp_app_desc.c.i
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/app_update && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) -D PROJECT_NAME=\"lvgl-demo\" -DPROJECT_VER=\"v2.0-69-g445a93c-dirty\" $(C_INCLUDES) $(C_FLAGS) -E /media/f73377/HDD/projects/heatter/esp-idf/components/app_update/esp_app_desc.c > CMakeFiles/__idf_app_update.dir/esp_app_desc.c.i
 
 esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_app_desc.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/__idf_app_update.dir/esp_app_desc.c.s"
-	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/app_update && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) -D PROJECT_NAME=\"lvgl-demo\" -DPROJECT_VER=\"v2.0-69-g8cfbf1c-dirty\" $(C_INCLUDES) $(C_FLAGS) -S /media/f73377/HDD/projects/heatter/esp-idf/components/app_update/esp_app_desc.c -o CMakeFiles/__idf_app_update.dir/esp_app_desc.c.s
+	cd /media/f73377/HDD/projects/heatter/lv_port_esp32_copy/esp-idf/app_update && /home/f73377/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc $(C_DEFINES) -D PROJECT_NAME=\"lvgl-demo\" -DPROJECT_VER=\"v2.0-69-g445a93c-dirty\" $(C_INCLUDES) $(C_FLAGS) -S /media/f73377/HDD/projects/heatter/esp-idf/components/app_update/esp_app_desc.c -o CMakeFiles/__idf_app_update.dir/esp_app_desc.c.s
 
 esp-idf/app_update/CMakeFiles/__idf_app_update.dir/esp_app_desc.c.obj.requires:
 
