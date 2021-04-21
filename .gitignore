@@ -86,3 +86,9 @@ lvgl-demo.bin
 partition_table/partition-table.bin
 project_elf_src_esp32.c
 x509_crt_bundle.S
+
+esp-idf/
+bootloader/
+CMakeFiles/
+compile_commands.json
+config/sdkconfig.json

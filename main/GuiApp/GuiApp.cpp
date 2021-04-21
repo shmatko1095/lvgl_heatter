@@ -1,77 +1,61 @@
 /*
- * exampleGuiTask.c
+ * GuiApp.cpp
  *
- *  Created on: Apr 12, 2021
+ *  Created on: Apr 21, 2021
  *      Author: f73377
  */
 
-#include "../GuiApp/include/GuiApp.h"
-
-#include "lvgl_helpers.h"
-#include "esp_heap_caps.h"
-
-#include "freertos/task.h"
-#include "esp_freertos_hooks.h"
-#include "freertos/semphr.h"
-#include "esp_system.h"
-#include "driver/gpio.h"
+#include "GuiApp.h"
 #include "lvgl.h"
-#include "include/MainScreen.h"
+#include "lvgl_helpers.h"
+#include "esp_timer.h"
 
 #define LV_TICK_PERIOD_MS 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+static GuiApp guiApp;
 
-static void run();
+static lv_color_t *buf1;
+static lv_color_t *buf2;
+static SemaphoreHandle_t xGuiSemaphore;
+
 static void lvgl_init();
 static void lv_tick_task(void *arg);
 
-/* Creates a semaphore to handle concurrent call to lvgl stuff
- * If you wish to call *any* lvgl function from other threads/tasks
- * you should lock on the very same semaphore! */
-static SemaphoreHandle_t xGuiSemaphore;
-static lv_color_t *buf1;
-static lv_color_t *buf2;
-
-
-static lv_obj_t* mainScreen;
-
-void guiApp_init() {
+GuiApp::GuiApp() {
 	xGuiSemaphore = xSemaphoreCreateMutex();
+}
+
+GuiApp::~GuiApp() {
+}
+
+void GuiApp::init() {
 	lvgl_init();
-
-
-	mainScreen = mainScreen_create();
-	lv_scr_load(mainScreen);
+//	mainScreen = mainScreen_create();
+//	lv_scr_load(mainScreen);
 }
 
-void guiApp_start(const uint32_t usStackDepth, UBaseType_t uxPriority,
-		const BaseType_t xCoreID) {
-	xTaskCreatePinnedToCore(run, "gui_run", 4096 * 2, NULL, 0, NULL, 1);
+
+void vTaskCode( void * pvParameters )
+{
+	GuiApp::run();
+
+	free(buf1);
+	free(buf2);
+	vTaskDelete(NULL);
 }
 
-static void run(void *pvParameter) {
-	(void) pvParameter;
+void GuiApp::start(uint32_t stackSize, uint8_t priority, uint8_t coreId) {
+	xTaskCreatePinnedToCore(vTaskCode, "gui_run", stackSize, NULL, priority, NULL, coreId);
+}
 
+void GuiApp::run() {
 	while (1) {
-		/* Delay 1 tick (assumes FreeRTOS tick is 10ms */
 		vTaskDelay(pdMS_TO_TICKS(10));
-
-		/* Try to take the semaphore, call lvgl related function on success */
 		if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
 			lv_task_handler();
 			xSemaphoreGive(xGuiSemaphore);
 		}
 	}
-
-	/* A task should NEVER return */
-	free(buf1);
-#ifndef CONFIG_LV_TFT_DISPLAY_MONOCHROME
-	free(buf2);
-#endif
-	vTaskDelete(NULL);
 }
 
 static void lvgl_init() {
@@ -121,11 +105,6 @@ static void lvgl_init() {
 
 static void lv_tick_task(void *arg) {
 	(void) arg;
-
 	lv_tick_inc(LV_TICK_PERIOD_MS);
 }
-
-#ifdef __cplusplus
-}
-#endif
 

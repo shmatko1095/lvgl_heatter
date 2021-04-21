@@ -1,2 +1,5 @@
-idf_component_register(SRCS "GuiApp.c" "bg.c"
-                    INCLUDE_DIRS "include")
+idf_component_register(SRCS 
+	"bg.c"
+	"MainScreen.cpp"
+	"GuiApp.cpp"
+                    INCLUDE_DIRS "")

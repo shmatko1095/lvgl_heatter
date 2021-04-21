@@ -13,8 +13,8 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "include/MainScreen.h"
 #include "../../components/lv_examples/lv_examples/lv_examples.h"
+#include "include/MainScreenC.h"
 
 static void controls_create(lv_obj_t *parent);
 static void visuals_create(lv_obj_t *parent);

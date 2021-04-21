@@ -9,7 +9,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.
  */
 
-#include "GuiApp/include/GuiApp.h"
+#include "GuiApp/GuiApp.h"
 #include "Model.hpp"
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
@@ -18,9 +18,9 @@
 #include "lvgl/lvgl.h"
 #endif
 
-#define GUI_TASK_STACK_SIZE 4096*2
-#define GUI_TASK_PRIORITY 0
-#define GUI_TASK_CORE 1
+#define GUI_TASK_STACK_SIZE 4096
+#define GUI_TASK_PRIORITY 1
+#define GUI_TASK_CORE 0
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,8 +30,8 @@ void app_main() {
 	Model::preinit();
 	Model::init();
 
-	guiApp_init();
-	guiApp_start(GUI_TASK_STACK_SIZE, GUI_TASK_PRIORITY, GUI_TASK_CORE);
+	GuiApp::init();
+	GuiApp::start(GUI_TASK_STACK_SIZE, GUI_TASK_PRIORITY, GUI_TASK_CORE);
 
 }
 #ifdef __cplusplus
