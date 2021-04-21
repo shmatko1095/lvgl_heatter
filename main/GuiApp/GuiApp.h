@@ -9,6 +9,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
+#include "MainScreen.h"
+
 #ifndef MAIN_GUIAPP_GUIAPP_H_
 #define MAIN_GUIAPP_GUIAPP_H_
 
@@ -25,7 +27,7 @@ public:
 
 
 private:
-//	BaseScreen
+	static MainScreen mMainScreen;
 };
 #endif /* MAIN_GUIAPP_GUIAPP_H_ */
 

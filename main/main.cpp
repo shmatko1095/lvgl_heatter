@@ -30,6 +30,7 @@ void app_main() {
 	Model::preinit();
 	Model::init();
 
+
 	GuiApp::init();
 	GuiApp::start(GUI_TASK_STACK_SIZE, GUI_TASK_PRIORITY, GUI_TASK_CORE);
 

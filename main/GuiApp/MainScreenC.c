@@ -14,7 +14,7 @@
  *      INCLUDES
  *********************/
 #include "../../components/lv_examples/lv_examples/lv_examples.h"
-#include "include/MainScreenC.h"
+#include "MainScreenC.h"
 
 static void controls_create(lv_obj_t *parent);
 static void visuals_create(lv_obj_t *parent);

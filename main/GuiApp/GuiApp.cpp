@@ -21,6 +21,8 @@ static SemaphoreHandle_t xGuiSemaphore;
 static void lvgl_init();
 static void lv_tick_task(void *arg);
 
+MainScreen GuiApp::mMainScreen;
+
 GuiApp::GuiApp() {
 	xGuiSemaphore = xSemaphoreCreateMutex();
 }
@@ -30,8 +32,9 @@ GuiApp::~GuiApp() {
 
 void GuiApp::init() {
 	lvgl_init();
-//	mainScreen = mainScreen_create();
-//	lv_scr_load(mainScreen);
+
+	mMainScreen.init();
+	mMainScreen.load();
 }
 
 
