@@ -17,7 +17,7 @@
 class GuiApp {
 public:
 	GuiApp();
-	virtual ~GuiApp();
+	virtual ~GuiApp(){};
 
 	static void init();
 

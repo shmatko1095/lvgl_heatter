@@ -10,7 +10,7 @@
 #include "lvgl_helpers.h"
 #include "esp_timer.h"
 
-#define LV_TICK_PERIOD_MS 1
+#define LV_TICK_PERIOD_MS 2
 
 static GuiApp guiApp;
 
@@ -25,9 +25,6 @@ MainScreen GuiApp::mMainScreen;
 
 GuiApp::GuiApp() {
 	xGuiSemaphore = xSemaphoreCreateMutex();
-}
-
-GuiApp::~GuiApp() {
 }
 
 void GuiApp::init() {
@@ -53,8 +50,11 @@ void GuiApp::start(uint32_t stackSize, uint8_t priority, uint8_t coreId) {
 
 void GuiApp::run() {
 	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(10));
+		vTaskDelay(pdMS_TO_TICKS(20));
 		if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
+
+			mMainScreen.run();
+
 			lv_task_handler();
 			xSemaphoreGive(xGuiSemaphore);
 		}

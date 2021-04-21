@@ -21,14 +21,16 @@ public:
 
     void load();
 
-    void update();
+    void run();
 
 private:
-    lv_obj_t* linemeterCreate(lv_obj_t *par);
     lv_obj_t* baseCreate();
+    lv_obj_t* linemeterSetpointCreate(lv_obj_t *par);
+    lv_obj_t* linemeterActualCreate(lv_obj_t *par);
 
-    lv_obj_t * mLinemeter;
     lv_obj_t * mBase;
+    lv_obj_t * mLinemeterSetpoint;
+    lv_obj_t * mLinemeterActual;
 };
 
 #endif /* GUIAPP_MAINSCREEN_H_ */
