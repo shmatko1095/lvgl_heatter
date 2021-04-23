@@ -7,6 +7,12 @@
 
 #include "MainScreen.h"
 #include "Colors.hpp"
+#include "esp_system.h"
+
+LV_IMG_DECLARE(calendar);
+LV_IMG_DECLARE(clock);
+LV_IMG_DECLARE(shutdown);
+LV_IMG_DECLARE(snowflake);
 
 enum {
 	linemeter_min = 0,
@@ -19,14 +25,28 @@ enum {
 	linemeter_setpoint_scale_width = 14
 };
 
-MainScreen::MainScreen() : mBase(nullptr), mLinemeterSetpoint(nullptr), mLinemeterActual(nullptr) {
+enum ModeList {
+	Off,
+	On,
+	Day,
+	Week,
+	Deicing,
+	ModeAmont
+};
+
+uint8_t MainScreen::currentMode = Day;
+lv_obj_t* MainScreen::mBase = nullptr;
+lv_obj_t* MainScreen::mIconMode = nullptr;
+
+MainScreen::MainScreen() {
 }
 
 void MainScreen::init(){
-	mBase = baseCreate();
+	mBase = createBase();
 
-	mLinemeterSetpoint = linemeterSetpointCreate(mBase);
-	mLinemeterActual = linemeterActualCreate(mLinemeterSetpoint);
+	mLinemeterSetpoint = createLinemeterSetpoint(mBase);
+	mLinemeterActual = createLinemeterActual(mLinemeterSetpoint);
+	mIconMode = MainScreen::createIconBase(mBase, &clock, MainScreen::iconModeCb);
 }
 
 void MainScreen::load(){
@@ -42,8 +62,53 @@ void MainScreen::run(){
 	cntActual+=2;
 }
 
-lv_obj_t* MainScreen::linemeterActualCreate(lv_obj_t *par) {
-	lv_obj_t *linemeter = lv_linemeter_create(par, NULL);
+void MainScreen::handleCurrentModeCd(lv_obj_t *obj, uint8_t mode)	{
+	switch (mode) {
+	case Off:
+		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+		lv_img_set_src(obj, &shutdown);
+		break;
+	case On:
+		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+		lv_img_set_src(obj, &clock);
+		break;
+	case Day:
+		lv_img_set_src(obj, &calendar);
+		break;
+	case Week:
+		lv_img_set_src(obj, &snowflake);
+		break;
+	case Deicing:
+		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+		lv_img_set_src(obj, &shutdown);
+		break;
+	default:
+		break;
+	}
+}
+
+void MainScreen::iconModeCb(lv_obj_t *obj, lv_event_t event) {
+	if ((event == LV_EVENT_CLICKED) || (event == LV_EVENT_SHORT_CLICKED) || (event == LV_EVENT_RELEASED)) {
+		MainScreen::handleCurrentModeCd(obj, currentMode);
+		currentMode++;
+		currentMode >= ModeAmont ? currentMode = Off : 0;
+		printf("Clicked\n");
+	}
+}
+
+lv_obj_t* MainScreen::createIconBase(lv_obj_t *par, const lv_img_dsc_t* img, lv_event_cb_t cb) {
+    lv_obj_t* obj = lv_img_create(par, NULL);
+    lv_img_set_src(obj, img);
+//    lv_obj_set_style_local_image_opa(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_40);
+//    lv_obj_set_style_local_image_recolor_opa(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_100);
+    lv_obj_align(obj, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -20);
+
+    lv_obj_set_click(obj, true);
+    lv_obj_set_event_cb(obj, cb);
+    return obj;
+}
+
+lv_obj_t* MainScreen::createLinemeterActual(lv_obj_t *par) {
 	static lv_style_t style_box;
 	lv_style_init(&style_box);
 
@@ -57,6 +122,7 @@ lv_obj_t* MainScreen::linemeterActualCreate(lv_obj_t *par) {
 	lv_style_set_border_width(&style_box, LV_STATE_DEFAULT, 0);
 	lv_style_set_bg_opa(&style_box, LV_STATE_DEFAULT, LV_OPA_TRANSP);
 
+	lv_obj_t *linemeter = lv_linemeter_create(par, NULL);
 	lv_linemeter_set_range(linemeter, linemeter_min, linemeter_max); /*Set the range*/
 	lv_linemeter_set_scale(linemeter, linemeter_angle, linemeter_lines); /*Set the angle and number of lines*/
 
@@ -69,8 +135,7 @@ lv_obj_t* MainScreen::linemeterActualCreate(lv_obj_t *par) {
 	return linemeter;
 }
 
-lv_obj_t* MainScreen::linemeterSetpointCreate(lv_obj_t *par) {
-	lv_obj_t *linemeter = lv_linemeter_create(par, NULL);
+lv_obj_t* MainScreen::createLinemeterSetpoint(lv_obj_t *par) {
 	static lv_style_t style_box;
 	lv_style_init(&style_box);
 
@@ -86,6 +151,7 @@ lv_obj_t* MainScreen::linemeterSetpointCreate(lv_obj_t *par) {
 
 	lv_style_set_bg_color(&style_box, LV_STATE_DEFAULT, BG_COLOR);
 
+	lv_obj_t *linemeter = lv_linemeter_create(par, NULL);
 	lv_linemeter_set_range(linemeter, linemeter_min, linemeter_max); /*Set the range*/
 	lv_linemeter_set_scale(linemeter, linemeter_angle, linemeter_lines); /*Set the angle and number of lines*/
 
@@ -97,7 +163,7 @@ lv_obj_t* MainScreen::linemeterSetpointCreate(lv_obj_t *par) {
 	return linemeter;
 }
 
-lv_obj_t* MainScreen::baseCreate() {
+lv_obj_t* MainScreen::createBase() {
 	lv_obj_t* base = lv_obj_create(NULL, NULL);
 	static lv_style_t style_box;
 	lv_style_init(&style_box);
@@ -105,3 +171,4 @@ lv_obj_t* MainScreen::baseCreate() {
 	lv_obj_add_style(base, LV_LINEMETER_PART_MAIN, &style_box);
 	return base;
 }
+

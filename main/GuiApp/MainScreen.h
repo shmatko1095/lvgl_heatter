@@ -24,13 +24,24 @@ public:
     void run();
 
 private:
-    lv_obj_t* baseCreate();
-    lv_obj_t* linemeterSetpointCreate(lv_obj_t *par);
-    lv_obj_t* linemeterActualCreate(lv_obj_t *par);
+    lv_obj_t* createBase();
+    lv_obj_t* createLinemeterSetpoint(lv_obj_t *par);
+    lv_obj_t* createLinemeterActual(lv_obj_t *par);
+    static lv_obj_t* createIconBase(lv_obj_t *par, const lv_img_dsc_t* img, lv_event_cb_t cb);
+    static void iconModeCb(lv_obj_t *obj, lv_event_t event);
+    static void handleCurrentModeCd(lv_obj_t *obj, uint8_t mode);
 
-    lv_obj_t * mBase;
-    lv_obj_t * mLinemeterSetpoint;
-    lv_obj_t * mLinemeterActual;
+    void changeMode();
+
+
+
+    lv_obj_t* mLinemeterSetpoint;
+    lv_obj_t* mLinemeterActual;
+    static lv_obj_t* mBase;
+    static lv_obj_t* mIconMode;
+    static uint8_t currentMode;
+
+
 };
 
 #endif /* GUIAPP_MAINSCREEN_H_ */
