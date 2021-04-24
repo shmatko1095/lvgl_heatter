@@ -13,6 +13,7 @@
 #define LINEMETER_END_COLOR         LV_COLOR_RED//lv_color_hex(0xcc0000)
 #define DEFAULT_COLOR               lv_color_hex(0xe6e6e6)
 #define BG_COLOR			        lv_color_hex(0x000d1a)
+#define PRESSED_BTN_COLOR			DEFAULT_COLOR
 
 #define REFLOW_OVEN_LIGHT           lv_color_hex(0xf3f8fe)
 #define REFLOW_OVEN_GRAY            lv_color_hex(0x7f8c8d)

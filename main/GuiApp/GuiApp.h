@@ -16,6 +16,13 @@
 
 class GuiApp {
 public:
+	enum {
+		MainScreenId,
+		ExtandedScreenId,
+		SettingsScreenId,
+		ScreenIdAmount
+	};
+
 	GuiApp();
 	virtual ~GuiApp(){};
 
@@ -25,8 +32,10 @@ public:
 
 	static void run();
 
+	static void changeScreen(uint8_t currentScreenId);
 
 private:
+
 	static MainScreen mMainScreen;
 };
 #endif /* MAIN_GUIAPP_GUIAPP_H_ */

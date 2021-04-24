@@ -18,7 +18,7 @@
 #include "lvgl/lvgl.h"
 #endif
 
-#define GUI_TASK_STACK_SIZE 4096
+#define GUI_TASK_STACK_SIZE 2*4096
 #define GUI_TASK_PRIORITY 1
 #define GUI_TASK_CORE 0
 

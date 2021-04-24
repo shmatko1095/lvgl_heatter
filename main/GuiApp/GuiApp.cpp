@@ -61,6 +61,10 @@ void GuiApp::run() {
 	}
 }
 
+void GuiApp::changeScreen(uint8_t currentScreenId) {
+
+}
+
 static void lvgl_init() {
 	lv_init();
 
@@ -110,4 +114,3 @@ static void lv_tick_task(void *arg) {
 	(void) arg;
 	lv_tick_inc(LV_TICK_PERIOD_MS);
 }
-

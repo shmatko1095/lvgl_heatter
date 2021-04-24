@@ -8,5 +8,6 @@ SRCS main.cpp
 	GuiApp/res/calendar.c		
 	GuiApp/res/shutdown.c	
 	GuiApp/res/snowflake.c
+	GuiApp/res/more.c
 INCLUDE_DIRS 
 )

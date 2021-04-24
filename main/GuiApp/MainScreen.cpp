@@ -5,6 +5,7 @@
  *      Author: f73377
  */
 
+#include "GuiApp.h"
 #include "MainScreen.h"
 #include "Colors.hpp"
 #include "esp_system.h"
@@ -13,6 +14,12 @@ LV_IMG_DECLARE(calendar);
 LV_IMG_DECLARE(clock);
 LV_IMG_DECLARE(shutdown);
 LV_IMG_DECLARE(snowflake);
+LV_IMG_DECLARE(more);
+
+enum {
+	button_w = 80,
+	button_h = 40,
+};
 
 enum {
 	linemeter_min = 0,
@@ -36,7 +43,9 @@ enum ModeList {
 
 uint8_t MainScreen::currentMode = Day;
 lv_obj_t* MainScreen::mBase = nullptr;
-lv_obj_t* MainScreen::mIconMode = nullptr;
+lv_obj_t* MainScreen::mModeButton = nullptr;
+lv_obj_t* MainScreen::mModeIcon = nullptr;
+lv_obj_t* MainScreen::mNextScreenButton = nullptr;
 
 MainScreen::MainScreen() {
 }
@@ -46,11 +55,14 @@ void MainScreen::init(){
 
 	mLinemeterSetpoint = createLinemeterSetpoint(mBase);
 	mLinemeterActual = createLinemeterActual(mLinemeterSetpoint);
-	mIconMode = MainScreen::createIconBase(mBase, &clock, MainScreen::iconModeCb);
+	mModeButton = MainScreen::createModeButton(mBase, MainScreen::iconModeCb);
+	mModeIcon = MainScreen::createModeIcon(mModeButton, &calendar);
+	mNextScreenButton = MainScreen::createNextScreenButton(mBase, MainScreen::nextScreenButtonCb);
 }
 
 void MainScreen::load(){
 	lv_scr_load(mBase);
+//	lv_ex_cont_1();
 }
 
 void MainScreen::run(){
@@ -62,25 +74,58 @@ void MainScreen::run(){
 	cntActual+=2;
 }
 
+void lv_ex_cont_1(void)
+{
+    lv_obj_t * cont;
+    cont = lv_cont_create(lv_scr_act(), NULL);
+    lv_obj_set_auto_realign(cont, true);                    /*Auto realign when the size changes*/
+
+    lv_obj_align_origo(cont, NULL, LV_ALIGN_CENTER, 0, 0);  /*This parametrs will be sued when realigned*/
+    lv_cont_set_fit(cont, LV_FIT_TIGHT);
+    lv_cont_set_layout(cont, LV_LAYOUT_COLUMN_MID);
+
+    lv_obj_t * label;
+    label = lv_label_create(cont, NULL);
+    lv_label_set_text(label, "Short text");
+
+    /*Refresh and pause here for a while to see how `fit` works*/
+    uint32_t t;
+    lv_refr_now(NULL);
+    t = lv_tick_get();
+    while(lv_tick_elaps(t) < 500);
+
+    label = lv_label_create(cont, NULL);
+    lv_label_set_text(label, "It is a long text");
+
+    /*Wait here too*/
+    lv_refr_now(NULL);
+    t = lv_tick_get();
+    while(lv_tick_elaps(t) < 500);
+
+    label = lv_label_create(cont, NULL);
+    lv_label_set_text(label, "Here is an even longer text");
+}
+
+
 void MainScreen::handleCurrentModeCd(lv_obj_t *obj, uint8_t mode)	{
 	switch (mode) {
 	case Off:
 		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
-		lv_img_set_src(obj, &shutdown);
+		lv_img_set_src(mModeIcon, &shutdown);
 		break;
 	case On:
 		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-		lv_img_set_src(obj, &clock);
+		lv_img_set_src(mModeIcon, &clock);
 		break;
 	case Day:
-		lv_img_set_src(obj, &calendar);
+		lv_img_set_src(mModeIcon, &calendar);
 		break;
 	case Week:
-		lv_img_set_src(obj, &snowflake);
+		lv_img_set_src(mModeIcon, &snowflake);
 		break;
 	case Deicing:
 		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-		lv_img_set_src(obj, &shutdown);
+		lv_img_set_src(mModeIcon, &shutdown);
 		break;
 	default:
 		break;
@@ -88,7 +133,7 @@ void MainScreen::handleCurrentModeCd(lv_obj_t *obj, uint8_t mode)	{
 }
 
 void MainScreen::iconModeCb(lv_obj_t *obj, lv_event_t event) {
-	if ((event == LV_EVENT_CLICKED) || (event == LV_EVENT_SHORT_CLICKED) || (event == LV_EVENT_RELEASED)) {
+	if (event == LV_EVENT_CLICKED) {
 		MainScreen::handleCurrentModeCd(obj, currentMode);
 		currentMode++;
 		currentMode >= ModeAmont ? currentMode = Off : 0;
@@ -96,16 +141,73 @@ void MainScreen::iconModeCb(lv_obj_t *obj, lv_event_t event) {
 	}
 }
 
-lv_obj_t* MainScreen::createIconBase(lv_obj_t *par, const lv_img_dsc_t* img, lv_event_cb_t cb) {
-    lv_obj_t* obj = lv_img_create(par, NULL);
-    lv_img_set_src(obj, img);
-//    lv_obj_set_style_local_image_opa(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_40);
-//    lv_obj_set_style_local_image_recolor_opa(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_100);
-    lv_obj_align(obj, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -20);
+lv_obj_t* MainScreen::createModeButton(lv_obj_t *par, lv_event_cb_t cb) {
+    static lv_anim_path_t path_ease_out;
+    lv_anim_path_init(&path_ease_out);
+    lv_anim_path_set_cb(&path_ease_out, lv_anim_path_ease_out);
 
-    lv_obj_set_click(obj, true);
-    lv_obj_set_event_cb(obj, cb);
-    return obj;
+	static lv_style_t style;
+    lv_style_init(&style);
+    lv_style_set_transition_time(&style, LV_STATE_PRESSED, 300);
+    lv_style_set_transition_time(&style, LV_STATE_DEFAULT, 0);
+    lv_style_set_transition_delay(&style, LV_STATE_DEFAULT, 300);
+    lv_style_set_bg_opa(&style, LV_STATE_DEFAULT, 0);
+    lv_style_set_bg_opa(&style, LV_STATE_PRESSED, LV_OPA_80);
+    lv_style_set_border_width(&style, LV_STATE_DEFAULT, 0);
+    lv_style_set_outline_width(&style, LV_STATE_DEFAULT, 0);
+    lv_style_set_transform_width(&style, LV_STATE_DEFAULT, -20);
+    lv_style_set_transform_height(&style, LV_STATE_DEFAULT, -20);
+    lv_style_set_transform_width(&style, LV_STATE_PRESSED, 0);
+    lv_style_set_transform_height(&style, LV_STATE_PRESSED, 0);
+
+    lv_style_set_transition_path(&style, LV_STATE_DEFAULT, &path_ease_out);
+    lv_style_set_transition_prop_1(&style, LV_STATE_DEFAULT, LV_STYLE_BG_OPA);
+    lv_style_set_transition_prop_2(&style, LV_STATE_DEFAULT, LV_STYLE_TRANSFORM_WIDTH);
+    lv_style_set_transition_prop_3(&style, LV_STATE_DEFAULT, LV_STYLE_TRANSFORM_HEIGHT);
+
+    lv_obj_t* btn = lv_btn_create(par, NULL);
+	lv_obj_set_event_cb(btn, cb);
+    lv_obj_set_size(btn, button_w, button_h);
+    lv_obj_align(btn, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -button_h);
+	lv_obj_add_style(btn, LV_BTN_PART_MAIN, &style);
+
+    return btn;
+}
+
+lv_obj_t* MainScreen::createModeIcon(lv_obj_t *par, const lv_img_dsc_t* img) {
+	lv_obj_t* icon= lv_img_create(par, NULL);
+	lv_img_set_src(icon, img);
+	lv_obj_set_style_local_image_opa(icon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_40);
+	lv_obj_set_style_local_image_recolor_opa(icon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
+	return icon;
+}
+
+void MainScreen::nextScreenButtonCb(lv_obj_t *obj, lv_event_t event) {
+	if (event == LV_EVENT_CLICKED){
+		printf("change screen\n");
+		GuiApp::changeScreen(GuiApp::MainScreenId);
+	}
+}
+
+lv_obj_t* MainScreen::createNextScreenButton(lv_obj_t *par, lv_event_cb_t cb) {
+    lv_obj_t* btn = lv_btn_create(par, NULL);
+    lv_obj_set_event_cb(btn, cb);
+    lv_obj_set_size(btn, button_w, button_h);
+    lv_obj_align(btn, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+
+	static lv_style_t style;
+    lv_style_init(&style);
+    lv_style_set_bg_opa(&style, LV_STATE_DEFAULT, 0);
+    lv_style_set_bg_opa(&style, LV_STATE_PRESSED, LV_OPA_80);
+    lv_style_set_bg_color(&style, LV_STATE_PRESSED, PRESSED_BTN_COLOR);
+    lv_style_set_border_width(&style, LV_STATE_DEFAULT, 0);
+    lv_style_set_outline_width(&style, LV_STATE_DEFAULT, 0);
+    lv_obj_add_style(btn, LV_BTN_PART_MAIN, &style);
+
+    static lv_obj_t* img = lv_img_create(btn, NULL);
+    lv_img_set_src(img, &more);
+    lv_obj_set_style_local_image_opa(img, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_40);
+	return btn;
 }
 
 lv_obj_t* MainScreen::createLinemeterActual(lv_obj_t *par) {
