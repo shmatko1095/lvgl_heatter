@@ -10,7 +10,7 @@
 #include "lvgl_helpers.h"
 #include "esp_timer.h"
 
-#define LV_TICK_PERIOD_MS 2
+#define LV_TICK_PERIOD_MS 1
 
 static GuiApp guiApp;
 
@@ -50,7 +50,7 @@ void GuiApp::start(uint32_t stackSize, uint8_t priority, uint8_t coreId) {
 
 void GuiApp::run() {
 	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(20));
+		vTaskDelay(pdMS_TO_TICKS(10));
 		if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
 
 			mMainScreen.run();

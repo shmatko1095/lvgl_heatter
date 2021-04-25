@@ -12,6 +12,7 @@
 #define LINEMETER_START_COLOR       LV_COLOR_ORANGE//lv_color_hex(0xffbf00)
 #define LINEMETER_END_COLOR         LV_COLOR_RED//lv_color_hex(0xcc0000)
 #define DEFAULT_COLOR               lv_color_hex(0xe6e6e6)
+#define SNOWFLAKE_COLOR             lv_color_hex(0x6699ff)
 #define BG_COLOR			        lv_color_hex(0x000d1a)
 #define PRESSED_BTN_COLOR			DEFAULT_COLOR
 

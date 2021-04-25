@@ -28,6 +28,7 @@ private:
     lv_obj_t* createLinemeterSetpoint(lv_obj_t *par);
     lv_obj_t* createLinemeterActual(lv_obj_t *par);
 
+    static lv_obj_t* createActualTempLabel(lv_obj_t *par);
     static lv_obj_t* createModeButton(lv_obj_t *par, lv_event_cb_t cb);
     static lv_obj_t* createModeIcon(lv_obj_t *par, const lv_img_dsc_t* img);
 
@@ -45,6 +46,7 @@ private:
     lv_obj_t* mLinemeterSetpoint;
     lv_obj_t* mLinemeterActual;
     static lv_obj_t* mBase;
+    static lv_obj_t* mActualTempLabel;
 
     static lv_obj_t* mModeButton;
     static lv_obj_t* mModeIcon;

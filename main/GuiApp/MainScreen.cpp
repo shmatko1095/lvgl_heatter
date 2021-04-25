@@ -43,6 +43,7 @@ enum ModeList {
 
 uint8_t MainScreen::currentMode = Day;
 lv_obj_t* MainScreen::mBase = nullptr;
+lv_obj_t* MainScreen::mActualTempLabel = nullptr;
 lv_obj_t* MainScreen::mModeButton = nullptr;
 lv_obj_t* MainScreen::mModeIcon = nullptr;
 lv_obj_t* MainScreen::mNextScreenButton = nullptr;
@@ -55,6 +56,7 @@ void MainScreen::init(){
 
 	mLinemeterSetpoint = createLinemeterSetpoint(mBase);
 	mLinemeterActual = createLinemeterActual(mLinemeterSetpoint);
+	mActualTempLabel = createActualTempLabel(mBase);
 	mModeButton = MainScreen::createModeButton(mBase, MainScreen::iconModeCb);
 	mModeIcon = MainScreen::createModeIcon(mModeButton, &calendar);
 	mNextScreenButton = MainScreen::createNextScreenButton(mBase, MainScreen::nextScreenButtonCb);
@@ -66,12 +68,13 @@ void MainScreen::load(){
 }
 
 void MainScreen::run(){
-	static uint8_t cntSetpoint = 50;
+	static uint8_t cntSetpoint = 70;
 	static uint8_t cntActual = 0;
 	lv_linemeter_set_value(mLinemeterSetpoint, cntSetpoint);
 	lv_linemeter_set_value(mLinemeterActual, cntActual);
-	cntSetpoint+=2;
-	cntActual+=2;
+	cntSetpoint+=1;
+	cntActual+=1;
+	lv_label_set_text_fmt(mActualTempLabel, "%d.%d°C", cntActual/10, cntActual%10);
 }
 
 void lv_ex_cont_1(void)
@@ -106,6 +109,21 @@ void lv_ex_cont_1(void)
     lv_label_set_text(label, "Here is an even longer text");
 }
 
+lv_obj_t* MainScreen::createActualTempLabel(lv_obj_t *par) {
+    lv_obj_t * label = lv_label_create(par, NULL);
+    lv_label_set_text(label, LV_SYMBOL_REFRESH);
+    lv_obj_set_auto_realign(label, true);
+    lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
+
+    static lv_style_t style;
+    lv_style_init(&style);
+    lv_style_set_text_font(&style, LV_STATE_DEFAULT, &lv_font_montserrat_36);
+    lv_style_set_text_color(&style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_obj_add_style(label, LV_LABEL_PART_MAIN, &style);
+
+	return label;
+}
 
 void MainScreen::handleCurrentModeCd(lv_obj_t *obj, uint8_t mode)	{
 	switch (mode) {
@@ -118,9 +136,11 @@ void MainScreen::handleCurrentModeCd(lv_obj_t *obj, uint8_t mode)	{
 		lv_img_set_src(mModeIcon, &clock);
 		break;
 	case Day:
+		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 		lv_img_set_src(mModeIcon, &calendar);
 		break;
 	case Week:
+		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, SNOWFLAKE_COLOR);
 		lv_img_set_src(mModeIcon, &snowflake);
 		break;
 	case Deicing:
@@ -175,9 +195,8 @@ lv_obj_t* MainScreen::createModeButton(lv_obj_t *par, lv_event_cb_t cb) {
 }
 
 lv_obj_t* MainScreen::createModeIcon(lv_obj_t *par, const lv_img_dsc_t* img) {
-	lv_obj_t* icon= lv_img_create(par, NULL);
+	lv_obj_t* icon = lv_img_create(par, NULL);
 	lv_img_set_src(icon, img);
-	lv_obj_set_style_local_image_opa(icon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_40);
 	lv_obj_set_style_local_image_recolor_opa(icon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
 	return icon;
 }
@@ -230,8 +249,6 @@ lv_obj_t* MainScreen::createLinemeterActual(lv_obj_t *par) {
 
 	lv_obj_set_size(linemeter, LV_HOR_RES, LV_VER_RES);
 	lv_obj_align(linemeter, NULL, LV_ALIGN_CENTER, 0, 0);
-
-	lv_obj_set_style_local_value_str(linemeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, "Line meter");
 	lv_obj_add_style(linemeter, LV_LINEMETER_PART_MAIN, &style_box);
 
 	return linemeter;
