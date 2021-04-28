@@ -15,6 +15,8 @@
 #define SNOWFLAKE_COLOR             lv_color_hex(0x6699ff)
 #define BG_COLOR			        lv_color_hex(0x000d1a)
 #define PRESSED_BTN_COLOR			DEFAULT_COLOR
+#define CANCEL_BTN_COLOR			lv_color_hex(0x373D44)
+#define OK_BTN_COLOR			    lv_color_hex(0x01A4FF)
 
 #define REFLOW_OVEN_LIGHT           lv_color_hex(0xf3f8fe)
 #define REFLOW_OVEN_GRAY            lv_color_hex(0x7f8c8d)
@@ -28,8 +30,6 @@
 #define REFLOW_OVEN_LIGHT_RED       lv_color_hex(0xe74c3c)
 #define REFLOW_OVEN_RED             lv_color_hex(0xd51732)
 #define REFLOW_OVEN_YELLOW          lv_color_hex(0xf0f000)
-
-
 
 
 #endif /* GUIAPP_COLORS_HPP_ */

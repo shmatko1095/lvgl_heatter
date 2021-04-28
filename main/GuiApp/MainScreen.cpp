@@ -9,6 +9,7 @@
 #include "MainScreen.h"
 #include "Colors.hpp"
 #include "esp_system.h"
+#include "TempSetpointContainer.h"
 
 LV_IMG_DECLARE(calendar);
 LV_IMG_DECLARE(clock);
@@ -57,7 +58,7 @@ void MainScreen::init(){
 	mLinemeterSetpoint = createLinemeterSetpoint(mBase);
 	mLinemeterActual = createLinemeterActual(mLinemeterSetpoint);
 	mActualTempLabel = createActualTempLabel(mBase);
-	mModeButton = MainScreen::createModeButton(mBase, MainScreen::iconModeCb);
+	mModeButton = MainScreen::createModeButton(mBase, MainScreen::modeIconCb);
 	mModeIcon = MainScreen::createModeIcon(mModeButton, &calendar);
 	mNextScreenButton = MainScreen::createNextScreenButton(mBase, MainScreen::nextScreenButtonCb);
 }
@@ -77,36 +78,16 @@ void MainScreen::run(){
 	lv_label_set_text_fmt(mActualTempLabel, "%d.%d°C", cntActual/10, cntActual%10);
 }
 
-void lv_ex_cont_1(void)
+void tempSettingOpen(void * scr)
 {
-    lv_obj_t * cont;
-    cont = lv_cont_create(lv_scr_act(), NULL);
-    lv_obj_set_auto_realign(cont, true);                    /*Auto realign when the size changes*/
+	TempSetpointContainer::create(MainScreen::getBase());
+}
 
-    lv_obj_align_origo(cont, NULL, LV_ALIGN_CENTER, 0, 0);  /*This parametrs will be sued when realigned*/
-    lv_cont_set_fit(cont, LV_FIT_TIGHT);
-    lv_cont_set_layout(cont, LV_LAYOUT_COLUMN_MID);
-
-    lv_obj_t * label;
-    label = lv_label_create(cont, NULL);
-    lv_label_set_text(label, "Short text");
-
-    /*Refresh and pause here for a while to see how `fit` works*/
-    uint32_t t;
-    lv_refr_now(NULL);
-    t = lv_tick_get();
-    while(lv_tick_elaps(t) < 500);
-
-    label = lv_label_create(cont, NULL);
-    lv_label_set_text(label, "It is a long text");
-
-    /*Wait here too*/
-    lv_refr_now(NULL);
-    t = lv_tick_get();
-    while(lv_tick_elaps(t) < 500);
-
-    label = lv_label_create(cont, NULL);
-    lv_label_set_text(label, "Here is an even longer text");
+void MainScreen::actualTempLabelCb(lv_obj_t *obj, lv_event_t event){
+	if (event == LV_EVENT_CLICKED) {
+		lv_async_call(tempSettingOpen, NULL);
+		printf("Temperature setting container created\n");
+	}
 }
 
 lv_obj_t* MainScreen::createActualTempLabel(lv_obj_t *par) {
@@ -115,13 +96,14 @@ lv_obj_t* MainScreen::createActualTempLabel(lv_obj_t *par) {
     lv_obj_set_auto_realign(label, true);
     lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
+    lv_obj_set_click(label, true);
+    lv_obj_set_event_cb(label, MainScreen::actualTempLabelCb);
 
     static lv_style_t style;
     lv_style_init(&style);
     lv_style_set_text_font(&style, LV_STATE_DEFAULT, &lv_font_montserrat_36);
     lv_style_set_text_color(&style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_obj_add_style(label, LV_LABEL_PART_MAIN, &style);
-
 	return label;
 }
 
@@ -144,7 +126,7 @@ void MainScreen::handleCurrentModeCd(lv_obj_t *obj, uint8_t mode)	{
 		lv_img_set_src(mModeIcon, &snowflake);
 		break;
 	case Deicing:
-		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 		lv_img_set_src(mModeIcon, &shutdown);
 		break;
 	default:
@@ -152,7 +134,7 @@ void MainScreen::handleCurrentModeCd(lv_obj_t *obj, uint8_t mode)	{
 	}
 }
 
-void MainScreen::iconModeCb(lv_obj_t *obj, lv_event_t event) {
+void MainScreen::modeIconCb(lv_obj_t *obj, lv_event_t event) {
 	if (event == LV_EVENT_CLICKED) {
 		MainScreen::handleCurrentModeCd(obj, currentMode);
 		currentMode++;
@@ -173,6 +155,7 @@ lv_obj_t* MainScreen::createModeButton(lv_obj_t *par, lv_event_cb_t cb) {
     lv_style_set_transition_delay(&style, LV_STATE_DEFAULT, 300);
     lv_style_set_bg_opa(&style, LV_STATE_DEFAULT, 0);
     lv_style_set_bg_opa(&style, LV_STATE_PRESSED, LV_OPA_80);
+    lv_style_set_bg_color(&style, LV_STATE_PRESSED, PRESSED_BTN_COLOR);
     lv_style_set_border_width(&style, LV_STATE_DEFAULT, 0);
     lv_style_set_outline_width(&style, LV_STATE_DEFAULT, 0);
     lv_style_set_transform_width(&style, LV_STATE_DEFAULT, -20);
