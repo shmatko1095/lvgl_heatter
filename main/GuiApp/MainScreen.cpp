@@ -99,11 +99,9 @@ lv_obj_t* MainScreen::createActualTempLabel(lv_obj_t *par) {
     lv_obj_set_click(label, true);
     lv_obj_set_event_cb(label, MainScreen::actualTempLabelCb);
 
-    static lv_style_t style;
-    lv_style_init(&style);
-    lv_style_set_text_font(&style, LV_STATE_DEFAULT, &lv_font_montserrat_36);
-    lv_style_set_text_color(&style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_obj_add_style(label, LV_LABEL_PART_MAIN, &style);
+    lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_montserrat_36);
+    lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+
 	return label;
 }
 
