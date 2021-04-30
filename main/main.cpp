@@ -11,12 +11,7 @@
 
 #include "GuiApp/GuiApp.h"
 #include "Model.hpp"
-
-#ifdef LV_LVGL_H_INCLUDE_SIMPLE
-#include "lvgl.h"
-#else
-#include "lvgl/lvgl.h"
-#endif
+#include "SdStorrage.h"
 
 #define GUI_TASK_STACK_SIZE 2*4096
 #define GUI_TASK_PRIORITY 1
@@ -30,11 +25,13 @@ void app_main() {
 	Model::preinit();
 	Model::init();
 
-
 	GuiApp::init();
-	GuiApp::start(GUI_TASK_STACK_SIZE, GUI_TASK_PRIORITY, GUI_TASK_CORE);
+	SdStorrage::init();
 
+	GuiApp::start(GUI_TASK_STACK_SIZE, GUI_TASK_PRIORITY, GUI_TASK_CORE);
+	SdStorrage::start();
 }
+
 #ifdef __cplusplus
 }
 #endif

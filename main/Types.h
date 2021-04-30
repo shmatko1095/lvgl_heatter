@@ -11,6 +11,7 @@
 #define COMMON_TYPES_HPP_
 
 //------------------------------------------------------------------------------
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <sys/types.h>
