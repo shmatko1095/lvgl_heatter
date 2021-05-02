@@ -4,6 +4,19 @@ SRCS main.cpp
 	Model.cpp 
 	SdStorrage.cpp
 	SdStorrage.h
+	Common.hpp
+	TaskExample.hpp
+	TaskExample.cpp
+	Core/BaseTask.hpp
+	Core/Mutex.hpp
+	Core/MutexLocker.hpp
+	Core/Queue.hpp
+	Core/Semaphore.hpp
+	Core/SYSDelay.hpp
+	Core/SYSPort.cpp
+	Core/SYSPort.hpp
+	Core/SYSTime.hpp
+	
 	GuiApp/GuiApp.cpp
 	GuiApp/MainScreen.cpp
 	GuiApp/TempSetpointContainer.cpp

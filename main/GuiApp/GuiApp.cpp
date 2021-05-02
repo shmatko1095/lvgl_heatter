@@ -12,8 +12,6 @@
 
 #define LV_TICK_PERIOD_MS 1
 
-static GuiApp guiApp;
-
 static lv_color_t *buf1;
 static lv_color_t *buf2;
 static SemaphoreHandle_t xGuiSemaphore;
@@ -24,31 +22,19 @@ static void lv_tick_task(void *arg);
 MainScreen GuiApp::mMainScreen;
 
 GuiApp::GuiApp() {
-	xGuiSemaphore = xSemaphoreCreateMutex();
+	create("TaskExample", 0, 1);
 }
 
 void GuiApp::init() {
 	lvgl_init();
-
 	mMainScreen.init();
 	mMainScreen.load();
 }
 
-
-void vTaskCode( void * pvParameters )
-{
-	GuiApp::run();
-
-	free(buf1);
-	free(buf2);
-	vTaskDelete(NULL);
-}
-
-void GuiApp::start(uint32_t stackSize, uint8_t priority, uint8_t coreId) {
-	xTaskCreatePinnedToCore(vTaskCode, "gui_run", stackSize, NULL, priority, NULL, coreId);
-}
-
 void GuiApp::run() {
+	init();
+	xGuiSemaphore = xSemaphoreCreateMutex();
+
 	while (1) {
 		vTaskDelay(pdMS_TO_TICKS(10));
 		if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
@@ -59,6 +45,8 @@ void GuiApp::run() {
 			xSemaphoreGive(xGuiSemaphore);
 		}
 	}
+	free(buf1);
+	free(buf2);
 }
 
 void GuiApp::changeScreen(uint8_t currentScreenId) {

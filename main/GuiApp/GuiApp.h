@@ -10,11 +10,12 @@
 #include "freertos/semphr.h"
 
 #include "MainScreen.h"
+#include "../Core/BaseTask.hpp"
 
 #ifndef MAIN_GUIAPP_GUIAPP_H_
 #define MAIN_GUIAPP_GUIAPP_H_
 
-class GuiApp {
+class GuiApp : public StaticBaseTask<2*4096> {
 public:
 	enum {
 		MainScreenId,
@@ -26,11 +27,9 @@ public:
 	GuiApp();
 	virtual ~GuiApp(){};
 
-	static void init();
+	void init();
 
-	static void start(uint32_t stackSize, uint8_t priority, uint8_t coreId);
-
-	static void run();
+	void run() override;
 
 	static void changeScreen(uint8_t currentScreenId);
 
