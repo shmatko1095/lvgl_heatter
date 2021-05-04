@@ -11,7 +11,7 @@
 #include "Types.h"
 #include "Core/BaseTask.hpp"
 
-class SpiFfsStorrage : public StaticBaseTask<2000> {
+class SpiFfsStorrage : public StaticBaseTask<1800> {
 public:
 
 	SpiFfsStorrage();
@@ -30,9 +30,7 @@ private:
 extern "C" {
 #endif
 
-void nvsExample(void);
-
-void spiffsStorrageExample(void);
+void vfsExample(void);
 
 #ifdef __cplusplus
 }

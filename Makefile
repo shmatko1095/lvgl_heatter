@@ -625,32 +625,6 @@ encrypted-partition_table-flash/fast:
 .PHONY : encrypted-partition_table-flash/fast
 
 #=============================================================================
-# Target rules for targets named blank_ota_data
-
-# Build rule for target.
-blank_ota_data: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 blank_ota_data
-.PHONY : blank_ota_data
-
-# fast build rule for target.
-blank_ota_data/fast:
-	$(MAKE) -f esp-idf/app_update/CMakeFiles/blank_ota_data.dir/build.make esp-idf/app_update/CMakeFiles/blank_ota_data.dir/build
-.PHONY : blank_ota_data/fast
-
-#=============================================================================
-# Target rules for targets named read_otadata
-
-# Build rule for target.
-read_otadata: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 read_otadata
-.PHONY : read_otadata
-
-# fast build rule for target.
-read_otadata/fast:
-	$(MAKE) -f esp-idf/app_update/CMakeFiles/read_otadata.dir/build.make esp-idf/app_update/CMakeFiles/read_otadata.dir/build
-.PHONY : read_otadata/fast
-
-#=============================================================================
 # Target rules for targets named __idf_app_update
 
 # Build rule for target.
@@ -662,45 +636,6 @@ __idf_app_update: cmake_check_build_system
 __idf_app_update/fast:
 	$(MAKE) -f esp-idf/app_update/CMakeFiles/__idf_app_update.dir/build.make esp-idf/app_update/CMakeFiles/__idf_app_update.dir/build
 .PHONY : __idf_app_update/fast
-
-#=============================================================================
-# Target rules for targets named erase_otadata
-
-# Build rule for target.
-erase_otadata: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 erase_otadata
-.PHONY : erase_otadata
-
-# fast build rule for target.
-erase_otadata/fast:
-	$(MAKE) -f esp-idf/app_update/CMakeFiles/erase_otadata.dir/build.make esp-idf/app_update/CMakeFiles/erase_otadata.dir/build
-.PHONY : erase_otadata/fast
-
-#=============================================================================
-# Target rules for targets named otadata-flash
-
-# Build rule for target.
-otadata-flash: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 otadata-flash
-.PHONY : otadata-flash
-
-# fast build rule for target.
-otadata-flash/fast:
-	$(MAKE) -f esp-idf/app_update/CMakeFiles/otadata-flash.dir/build.make esp-idf/app_update/CMakeFiles/otadata-flash.dir/build
-.PHONY : otadata-flash/fast
-
-#=============================================================================
-# Target rules for targets named encrypted-otadata-flash
-
-# Build rule for target.
-encrypted-otadata-flash: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 encrypted-otadata-flash
-.PHONY : encrypted-otadata-flash
-
-# fast build rule for target.
-encrypted-otadata-flash/fast:
-	$(MAKE) -f esp-idf/app_update/CMakeFiles/encrypted-otadata-flash.dir/build.make esp-idf/app_update/CMakeFiles/encrypted-otadata-flash.dir/build
-.PHONY : encrypted-otadata-flash/fast
 
 #=============================================================================
 # Target rules for targets named __idf_bootloader_support
@@ -1739,12 +1674,7 @@ help:
 	@echo "... partition_table-flash"
 	@echo "... partition_table"
 	@echo "... encrypted-partition_table-flash"
-	@echo "... blank_ota_data"
-	@echo "... read_otadata"
 	@echo "... __idf_app_update"
-	@echo "... erase_otadata"
-	@echo "... otadata-flash"
-	@echo "... encrypted-otadata-flash"
 	@echo "... __idf_bootloader_support"
 	@echo "... __idf_esp_ipc"
 	@echo "... __idf_spi_flash"
