@@ -98,7 +98,7 @@ static void lvgl_init() {
 			esp_timer_start_periodic(periodic_timer, LV_TICK_PERIOD_MS * 1000));
 }
 
-static void lv_tick_task(void *arg) {
+static void IRAM_ATTR lv_tick_task(void *arg) {
 	(void) arg;
 	lv_tick_inc(LV_TICK_PERIOD_MS);
 }

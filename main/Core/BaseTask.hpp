@@ -13,6 +13,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "../Common.hpp"
+#include "../../config/sdkconfig.h"
 
 /**@brief Interface for RTOS task implementation
  * @ingroup kernel_objects
@@ -44,6 +45,16 @@ public:
   bool create(const char *name, void **stack, size_t stackBlocks, int core = 1, uint32_t priority = SysIdlePriority) {
     assert(!isRunning());
 
+	#if CONFIG_FREERTOS_UNICORE == 1
+    handle = xTaskCreateStatic(&BaseTask::taskCode,
+                                   name,
+                                   stackBlocks,
+                                   this,
+                                   priority,
+                                   reinterpret_cast<StackType_t *>(stack),
+                                   &xTaskBuffer);
+
+	#else
     handle = xTaskCreateStaticPinnedToCore(&BaseTask::taskCode,
                                name,
                                stackBlocks,
@@ -52,6 +63,7 @@ public:
                                reinterpret_cast<StackType_t *>(stack),
                                &xTaskBuffer,
 							   core);
+	#endif
     vTaskSetThreadLocalStoragePointer(handle, 0, this);
     return (handle != 0);
   }

@@ -2,8 +2,8 @@ idf_component_register(
 SRCS main.cpp  
 	Application.cpp
 	Model.cpp 
-	SdStorrage.cpp
-	SdStorrage.h
+	SpiFfsStorrage.cpp
+	SpiFfsStorrage.h
 	Common.hpp
 	TaskExample.hpp
 	TaskExample.cpp
