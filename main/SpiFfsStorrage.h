@@ -10,18 +10,16 @@
 
 #include "Types.h"
 #include "Core/BaseTask.hpp"
+#include "wear_levelling.h"
 
-class SpiFfsStorrage : public StaticBaseTask<1800> {
+class SpiFfsStorrage {
 public:
-
 	SpiFfsStorrage();
 	virtual ~SpiFfsStorrage(){};
 
-	void run() override;
-
 	void init();
 
-private:
+	void deinit();
 };
 
 

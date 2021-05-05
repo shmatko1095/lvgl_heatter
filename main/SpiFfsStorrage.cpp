@@ -6,61 +6,71 @@
  */
 
 #include "SpiFfsStorrage.h"
-
 #include "esp_vfs.h"
 #include "esp_vfs_fat.h"
-#include "wear_levelling.h"
 
 #define PATH "/spiflash"
 static const char *base_path = PATH;
 static wl_handle_t s_wl_handle = WL_INVALID_HANDLE;
 
-SpiFfsStorrage::SpiFfsStorrage(){
-	create("SpiFfsStorrage", 1, 1);
-}
-
-void SpiFfsStorrage::run(){
+SpiFfsStorrage::SpiFfsStorrage() {
 	init();
-
-	printf("Opening file\n");
-	static FILE *f = fopen(PATH"/hello.txt", "wb");
-	if (f == NULL) {
-		printf("Failed to open file for writing\n");
-	    return;
-	}
-	fprintf(f, "written using ESP-IDF %s\n", esp_get_idf_version());
-	fclose(f);
-	printf("File written\n");
-
-    while (true) {
-        printf("Reading file\n");
-        f = fopen(PATH"/hello.txt", "rb");
-        if (f == NULL) {
-        	printf("Failed to open file for reading\n");
-            return;
-        }
-        char line[128];
-        fgets(line, sizeof(line), f);
-        fclose(f);
-        // strip newline
-        char *pos = strchr(line, '\n');
-        if (pos) {
-            *pos = '\0';
-        }
-        printf("Read from file: '%s'\n", line);
-        vTaskDelay(200 / portTICK_PERIOD_MS);
-    }
-    printf("Unmounting FAT filesystem\n");
-    esp_vfs_fat_spiflash_unmount(base_path, s_wl_handle);
 }
 
-void SpiFfsStorrage::init(){
-    const esp_vfs_fat_mount_config_t mount_config = {4, true, CONFIG_WL_SECTOR_SIZE};
+//FILE* SpiFfsStorrage::openFile(const char *file, const char * mode) {
+//	FILE* f = fopen(file, mode);
+//	if (f == NULL) {
+//		printf("Failed to open file for writing\n");
+//	}
+//	return f;
+//}
+//
+//void SpiFfsStorrage::run(){
+//	printf("Opening file\n");
+//	static FILE *f = fopen(PATH"/hello.txt", "wb");
+//	if (f == NULL) {
+//		printf("Failed to open file for writing\n");
+//	    return;
+//	}
+//	fprintf(f, "written using ESP-IDF %s\n", esp_get_idf_version());
+//	fclose(f);
+//	printf("File written\n");
+//
+//    while (true) {
+//        printf("Reading file\n");
+//        f = fopen(PATH"/hello.txt", "rb");
+//        if (f == NULL) {
+//        	printf("Failed to open file for reading\n");
+//            return;
+//        }
+//        char line[128];
+//        fgets(line, sizeof(line), f);
+//        fclose(f);
+//        // strip newline
+//        char *pos = strchr(line, '\n');
+//        if (pos) {
+//            *pos = '\0';
+//        }
+//        printf("Read from file: '%s'\n", line);
+//        vTaskDelay(200 / portTICK_PERIOD_MS);
+//    }
+//}
+
+void SpiFfsStorrage::init() {
+    const esp_vfs_fat_mount_config_t mount_config = {
+    		.format_if_mount_failed = true,
+			.max_files = 4,
+			.allocation_unit_size = CONFIG_WL_SECTOR_SIZE};
+
     esp_err_t err = esp_vfs_fat_spiflash_mount(base_path, "storage", &mount_config, &s_wl_handle);
     if (err != ESP_OK) {
     	printf("Failed to mount FATFS (%s)\n", esp_err_to_name(err));
-        return;
     }
+}
+
+void SpiFfsStorrage::deinit() {
+	printf("End SpiFfsStorrage task, unmounting FAT filesystem\n");
+	esp_vfs_fat_spiflash_unmount(base_path, s_wl_handle);
 }
 
 void vfsExample(void) {

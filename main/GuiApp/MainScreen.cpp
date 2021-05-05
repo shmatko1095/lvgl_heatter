@@ -33,16 +33,6 @@ enum {
 	linemeter_setpoint_scale_width = 14
 };
 
-enum ModeList {
-	Off,
-	On,
-	Day,
-	Week,
-	Deicing,
-	ModeAmont
-};
-
-uint8_t MainScreen::currentMode = Day;
 lv_obj_t* MainScreen::mBase = nullptr;
 lv_obj_t* MainScreen::mActualTempLabel = nullptr;
 lv_obj_t* MainScreen::mModeButton = nullptr;
@@ -65,7 +55,6 @@ void MainScreen::init(){
 
 void MainScreen::load(){
 	lv_scr_load(mBase);
-//	lv_ex_cont_1();
 }
 
 void MainScreen::run(){
@@ -90,6 +79,46 @@ void MainScreen::actualTempLabelCb(lv_obj_t *obj, lv_event_t event){
 	}
 }
 
+void MainScreen::changeModeIcon(SchedulerUl::scheduler_mode_t mode) {
+	switch (mode) {
+	case SchedulerUl::scheduler_mode_t::ModeOff:
+	     lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+	     lv_img_set_src(mModeIcon, &shutdown);
+	     break;
+	case SchedulerUl::scheduler_mode_t::ModeManual:
+		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+		lv_img_set_src(mModeIcon, &shutdown);
+		break;
+	case SchedulerUl::scheduler_mode_t::ModeDaily:
+		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+		lv_img_set_src(mModeIcon, &clock);
+		break;
+	case SchedulerUl::scheduler_mode_t::ModeWeekly:
+		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+		lv_img_set_src(mModeIcon, &calendar);
+		break;
+	case SchedulerUl::scheduler_mode_t::ModeDeicing:
+		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, SNOWFLAKE_COLOR);
+		lv_img_set_src(mModeIcon, &snowflake);
+		break;
+	default:
+		printf("MainScreen::changeModeIcon Unknown mode\n");
+		break;
+	}
+}
+
+void MainScreen::modeIconCb(lv_obj_t *obj, lv_event_t event) {
+	if (event == LV_EVENT_CLICKED) {
+		GuiApp::changeMode();
+	}
+}
+
+void MainScreen::nextScreenButtonCb(lv_obj_t *obj, lv_event_t event) {
+	if (event == LV_EVENT_CLICKED){
+		GuiApp::changeScreen(GuiApp::MainScreenId);
+	}
+}
+
 lv_obj_t* MainScreen::createActualTempLabel(lv_obj_t *par) {
     lv_obj_t * label = lv_label_create(par, NULL);
     lv_label_set_text(label, LV_SYMBOL_REFRESH);
@@ -103,42 +132,6 @@ lv_obj_t* MainScreen::createActualTempLabel(lv_obj_t *par) {
     lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
 	return label;
-}
-
-void MainScreen::handleCurrentModeCd(lv_obj_t *obj, uint8_t mode)	{
-	switch (mode) {
-	case Off:
-		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
-		lv_img_set_src(mModeIcon, &shutdown);
-		break;
-	case On:
-		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-		lv_img_set_src(mModeIcon, &clock);
-		break;
-	case Day:
-		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-		lv_img_set_src(mModeIcon, &calendar);
-		break;
-	case Week:
-		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, SNOWFLAKE_COLOR);
-		lv_img_set_src(mModeIcon, &snowflake);
-		break;
-	case Deicing:
-		lv_obj_set_style_local_image_recolor(obj, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-		lv_img_set_src(mModeIcon, &shutdown);
-		break;
-	default:
-		break;
-	}
-}
-
-void MainScreen::modeIconCb(lv_obj_t *obj, lv_event_t event) {
-	if (event == LV_EVENT_CLICKED) {
-		MainScreen::handleCurrentModeCd(obj, currentMode);
-		currentMode++;
-		currentMode >= ModeAmont ? currentMode = Off : 0;
-		printf("Clicked\n");
-	}
 }
 
 lv_obj_t* MainScreen::createModeButton(lv_obj_t *par, lv_event_cb_t cb) {
@@ -180,13 +173,6 @@ lv_obj_t* MainScreen::createModeIcon(lv_obj_t *par, const lv_img_dsc_t* img) {
 	lv_img_set_src(icon, img);
 	lv_obj_set_style_local_image_recolor_opa(icon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
 	return icon;
-}
-
-void MainScreen::nextScreenButtonCb(lv_obj_t *obj, lv_event_t event) {
-	if (event == LV_EVENT_CLICKED){
-		printf("change screen\n");
-		GuiApp::changeScreen(GuiApp::MainScreenId);
-	}
 }
 
 lv_obj_t* MainScreen::createNextScreenButton(lv_obj_t *par, lv_event_cb_t cb) {

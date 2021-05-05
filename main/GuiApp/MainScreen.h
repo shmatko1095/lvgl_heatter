@@ -10,6 +10,7 @@
 
 #include "lvgl.h"
 #include "../Types.h"
+#include "../SchedulerUl.h"
 
 class MainScreen {
 public:
@@ -26,6 +27,8 @@ public:
     static lv_obj_t* getBase() {
     	return mBase;
     }
+
+    static void changeModeIcon(SchedulerUl::scheduler_mode_t mode);
 
 private:
     lv_obj_t* createBase();
@@ -53,8 +56,6 @@ private:
     static lv_obj_t* mModeIcon;
 
     static lv_obj_t* mNextScreenButton;
-    static uint8_t currentMode;
-
 
 };
 

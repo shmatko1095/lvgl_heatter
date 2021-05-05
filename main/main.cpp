@@ -13,6 +13,7 @@
 #include "Model.hpp"
 #include "TaskExample.hpp"
 #include "SpiFfsStorrage.h"
+#include "SchedulerUl.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,16 +26,14 @@ void app_main(void)
     Model::preinit();
     Model::init();
 
-//    static TaskExample example = TaskExample();
-    static TaskExample example2 = TaskExample();
-    static GuiApp guiApp = GuiApp();
     static SpiFfsStorrage storrage = SpiFfsStorrage();
+    static SchedulerUl schedulerUl = SchedulerUl();
+    static GuiApp guiApp = GuiApp(&schedulerUl);
+
+//    static TaskExample example = TaskExample();
+//    static TaskExample example2 = TaskExample();
 
 //    nvsExample();
-
-//	SdStorrage::init();
-//	SdStorrage::start();
-
 }
 
 
