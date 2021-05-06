@@ -7,20 +7,22 @@
 
 #include "esp_system.h"
 #include "TempSetpointContainer.h"
+#include "GuiApp.h"
+#include <string>
 
 lv_obj_t* TempSetpointContainer::mContainerBase = nullptr;
+static uint16_t rollerSetpoint = 0;
 
 static const char *tempRollerOptions =
-		" 10\n10.5\n 11\n11.5\n 12\n12.5\n 13\n13.5\n 14\n14.5\n 15\n15.5\n 16\n16.5\n 17\n17.5\n 18\n18.5\n 19\n19.5\n 20\n20.5\n 21\n21.5\n 22\n22.5\n 23\n23.5\n 24\n24.5\n 25\n25.5\n 26\n26.5\n 27\n27.5\n 28\n28.5\n 29\n29.5\n 30\n30.5\n 31\n31.5\n 32\n32.5\n 33\n33.5\n 34\n34.5\n 35\n35.5\n 36\n36.5\n 37\n37.5\n 38\n38.5\n 39\n39.5";
+		" 10\n10.5\n 11\n11.5\n 12\n12.5\n 13\n13.5\n 14\n14.5\n 15\n15.5\n 16\n16.5\n 17\n17.5\n 18\n18.5\n 19\n19.5\n 20\n20.5\n 21\n21.5\n 22\n22.5\n 23\n23.5\n 24\n24.5\n 25\n25.5\n 26\n26.5\n 27\n27.5\n 28\n28.5\n 29\n29.5\n 30\n30.5\n 31\n31.5\n 32\n32.5\n 33\n33.5\n 34\n34.5\n 35\n35.5\n 36\n36.5\n 37\n37.5\n 38\n38.5\n 39\n39.5\n40";
 
-static void rollerHandler(lv_obj_t * obj, lv_event_t event);
-static void autoBtnHandler(lv_obj_t * obj, lv_event_t event);
-static void manualBtnHandler(lv_obj_t * obj, lv_event_t event);
-static void cancelBtnHandler(lv_obj_t * obj, lv_event_t event);
+static void rollerHandler(lv_obj_t* obj, lv_event_t event);
+static void keepModeBtnHandler(lv_obj_t* obj, lv_event_t event);
+static void goToManualBtnHandler(lv_obj_t* obj, lv_event_t event);
+static void cancelBtnHandler(lv_obj_t* obj, lv_event_t event);
 
 static lv_obj_t* createTempSetpointContainer(lv_obj_t* par);
-static lv_obj_t* createAutoButton(lv_obj_t* par, lv_event_cb_t event_cb);
-static lv_obj_t* createManualButton(lv_obj_t* par, lv_event_cb_t event_cb);
+static lv_obj_t* createButton(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t x_ofs, const char* text);
 static lv_obj_t* createCancelButton(lv_obj_t* par, lv_event_cb_t event_cb);
 static lv_obj_t* openRoller(lv_obj_t* par);
 static lv_obj_t* openRollerLabel(lv_obj_t* par);
@@ -29,46 +31,52 @@ void TempSetpointContainer::create(lv_obj_t* par) {
 	mContainerBase = createTempSetpointContainer(par);
 	openRollerLabel(mContainerBase);
 	openRoller(mContainerBase);
-	createAutoButton(mContainerBase, autoBtnHandler);
-	createManualButton(mContainerBase, manualBtnHandler);
+	createButton(mContainerBase, keepModeBtnHandler, 50, "Keep current");
+	createButton(mContainerBase, goToManualBtnHandler, -50, "Go to manual");
 	createCancelButton(mContainerBase, cancelBtnHandler);
 }
 
-lv_obj_t* createTempSetpointContainer(lv_obj_t* par) {
+static void rollerHandler(lv_obj_t* obj, lv_event_t event) {
+	if(event == LV_EVENT_VALUE_CHANGED) {
+		char buf[10];
+	    lv_roller_get_selected_str(obj, buf, sizeof(buf));
+	    float tmp = std::stof(buf);
+	    rollerSetpoint = tmp*10;
+	}
+}
+
+static void keepModeBtnHandler(lv_obj_t* obj, lv_event_t event) {
+    if(event == LV_EVENT_CLICKED) {
+    	GuiApp::changeSetpoint(rollerSetpoint, false);
+    	lv_obj_del(TempSetpointContainer::mContainerBase);
+    }
+}
+
+static void goToManualBtnHandler(lv_obj_t* obj, lv_event_t event) {
+    if(event == LV_EVENT_CLICKED) {
+    	GuiApp::changeSetpoint(rollerSetpoint, true);
+    	lv_obj_del(TempSetpointContainer::mContainerBase);
+    }
+}
+
+static void cancelBtnHandler(lv_obj_t* obj, lv_event_t event) {
+    if(event == LV_EVENT_CLICKED) {
+    	lv_obj_del(TempSetpointContainer::mContainerBase);
+    }
+}
+
+static lv_obj_t* createTempSetpointContainer(lv_obj_t* par) {
     lv_obj_t * cont = lv_cont_create(par, NULL);
     lv_obj_set_size(cont, 200, 150);
     lv_obj_align(cont, NULL, LV_ALIGN_CENTER, 0, 0);
     return cont;
 }
 
-static void rollerHandler(lv_obj_t * obj, lv_event_t event){
-}
-
-static void autoBtnHandler(lv_obj_t * obj, lv_event_t event) {
-    if(event == LV_EVENT_CLICKED) {
-    	//Do something
-    	lv_obj_del(TempSetpointContainer::mContainerBase);
-    }
-}
-
-static void manualBtnHandler(lv_obj_t * obj, lv_event_t event) {
-    if(event == LV_EVENT_CLICKED) {
-    	//Do something
-    	lv_obj_del(TempSetpointContainer::mContainerBase);
-    }
-}
-
-static void cancelBtnHandler(lv_obj_t * obj, lv_event_t event) {
-    if(event == LV_EVENT_CLICKED) {
-    	lv_obj_del(TempSetpointContainer::mContainerBase);
-    }
-}
-
-static lv_obj_t* createAutoButton(lv_obj_t* par, lv_event_cb_t event_cb) {
-    lv_obj_t * btn = lv_btn_create(par, NULL);
+static lv_obj_t* createButton(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t x_ofs, const char* text) {
+    lv_obj_t* btn = lv_btn_create(par, NULL);
     lv_obj_set_event_cb(btn, event_cb);
-    lv_obj_set_size(btn, 80, 30);
-    lv_obj_align(btn, par, LV_ALIGN_IN_BOTTOM_LEFT, 15, -10);
+    lv_obj_set_size(btn, 85, 30);
+    lv_obj_align(btn, par, LV_ALIGN_IN_BOTTOM_MID, x_ofs, -10);
 
     static lv_style_t style;
     lv_style_init(&style);
@@ -78,27 +86,12 @@ static lv_obj_t* createAutoButton(lv_obj_t* par, lv_event_cb_t event_cb) {
     lv_style_set_border_width(&style, LV_STATE_DEFAULT, 0);
     lv_obj_add_style(btn, LV_BTN_PART_MAIN, &style);
 
-    lv_obj_t * label = lv_label_create(btn, NULL);
-    lv_label_set_text(label, "Ok");
-    return btn;
-}
-
-static lv_obj_t* createManualButton(lv_obj_t* par, lv_event_cb_t event_cb) {
-    lv_obj_t * btn = lv_btn_create(par, NULL);
-    lv_obj_set_event_cb(btn, event_cb);
-    lv_obj_set_size(btn, 80, 30);
-    lv_obj_align(btn, par, LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
-
-    static lv_style_t style;
-    lv_style_init(&style);
-    lv_style_set_bg_color(&style, LV_STATE_DEFAULT, CANCEL_BTN_COLOR);
-    lv_style_set_bg_color(&style, LV_STATE_PRESSED, PRESSED_BTN_COLOR);
-    lv_style_set_text_color(&style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_style_set_border_width(&style, LV_STATE_DEFAULT, 0);
-    lv_obj_add_style(btn, LV_BTN_PART_MAIN, &style);
-
-    lv_obj_t * label = lv_label_create(btn, NULL);
-    lv_label_set_text(label, "Cancel");
+    lv_obj_t* label = lv_label_create(par, NULL);
+    lv_label_set_long_mode(label, LV_LABEL_LONG_SROLL_CIRC);
+    lv_label_set_anim_speed(label, 15);
+    lv_obj_set_width(label, 75);
+    lv_obj_align(label, par, LV_ALIGN_IN_BOTTOM_MID, x_ofs, -15);
+    lv_label_set_text(label, text);
     return btn;
 }
 

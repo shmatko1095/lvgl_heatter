@@ -56,21 +56,26 @@ void GuiApp::run() {
 	free(buf2);
 }
 
+void GuiApp::changeSetpoint(uint16_t setpoint, bool goToManual) {
+	mSchedulerPtr->setSetpoint(setpoint);
+	if (goToManual) {
+		changeMode(SchedulerApp::scheduler_mode_t::ModeManual);
+	}
+}
+
 void GuiApp::changeScreen(uint8_t currentScreenId) {
 	printf("GuiApp::changeScreen\n");
 }
 
-void GuiApp::saveMode(void * scr) {
+void GuiApp::changeMode(SchedulerApp::scheduler_mode_t mode) {
+	mCurrentMode = mode;
+	mMainScreen.changeModeIcon(mCurrentMode);
 	mSchedulerPtr->setMode(mCurrentMode);
 }
 
-void GuiApp::changeMode() {
-	printf("GuiApp::changeMode\n");
-	mCurrentMode = (SchedulerApp::scheduler_mode_t)((uint8_t)mCurrentMode + 1);
-	mCurrentMode >= SchedulerApp::scheduler_mode_t::ModeAmount ?
-			mCurrentMode = SchedulerApp::scheduler_mode_t::ModeOff : 0;
-	mMainScreen.changeModeIcon(mCurrentMode);
-	lv_async_call(saveMode, NULL);
+void GuiApp::incMode() {
+	SchedulerApp::scheduler_mode_t mode = SchedulerApp::incMode(mCurrentMode);
+	changeMode(mode);
 }
 
 static void lvgl_init() {

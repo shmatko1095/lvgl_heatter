@@ -17,17 +17,6 @@ public:
 	static void create(lv_obj_t* par);
 
 	static lv_obj_t* mContainerBase;
-private:
-//	static lv_obj_t* createTempSetpointContainer(lv_obj_t* par);
-//
-//	static lv_obj_t* openRollerLabel(lv_obj_t* par);
-//
-//	static lv_obj_t* openRoller(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t x_ofs, lv_coord_t y_ofs);
-//	static lv_obj_t* createCancelButton(lv_obj_t* par, lv_event_cb_t event_cb);
-//	static lv_obj_t* createOkButton(lv_obj_t* par, lv_event_cb_t event_cb);
-//
-//	static lv_obj_t* mRoller;
-//	static lv_obj_t* mDecRoller;
 
 };
 

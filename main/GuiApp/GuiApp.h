@@ -32,11 +32,17 @@ public:
 
 	void run() override;
 
+	static void changeSetpoint(uint16_t setpoint, bool goToManual);
+
 	static void changeScreen(uint8_t currentScreenId);
 
-	static void changeMode();
+	static void changeMode(SchedulerApp::scheduler_mode_t mode);
 
-	static void saveMode(void* scr);
+	static void incMode();
+
+	static SchedulerApp::scheduler_mode_t getMode() {
+		return mCurrentMode;
+	}
 
 private:
 	static MainScreen mMainScreen;

@@ -67,8 +67,7 @@ void MainScreen::run(){
 	lv_label_set_text_fmt(mActualTempLabel, "%d.%d°C", cntActual/10, cntActual%10);
 }
 
-void tempSettingOpen(void * scr)
-{
+void tempSettingOpen(void * scr){
 	TempSetpointContainer::create(MainScreen::getBase());
 }
 
@@ -109,7 +108,7 @@ void MainScreen::changeModeIcon(SchedulerApp::scheduler_mode_t mode) {
 
 void MainScreen::modeIconCb(lv_obj_t *obj, lv_event_t event) {
 	if (event == LV_EVENT_CLICKED) {
-		GuiApp::changeMode();
+		GuiApp::incMode();
 	}
 }
 

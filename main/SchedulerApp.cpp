@@ -7,6 +7,7 @@
 
 #include "SchedulerApp.h"
 
+#include <time.h>
 #include <string.h>
 #include "Core/MutexLocker.hpp"
 
@@ -21,7 +22,7 @@ enum {
 SchedulerApp::SchedulerApp(){
 	create("SchedulerApp", 0, 1);
 	mMode = ModeUnknown;
-	mCurrntSetpoint = SetpointUnknown;
+	mSetpoint = SetpointUnknown;
 
 	static uint8_t ucQueueModeStorageArea[QueueModeLen * QueueModeItemSize];
 	static Queue modeQueue = Queue(ucQueueModeStorageArea, QueueModeLen, QueueModeItemSize);
@@ -29,21 +30,35 @@ SchedulerApp::SchedulerApp(){
 };
 
 void SchedulerApp::run() {
+//	remove(modeFilePath);
+
+	setenv("TZ", "CST-8", 1);
+	tzset();
+
 	while (1) {
 		handleModeQueue();
+
+		time_t now;
+		char strftime_buf[64];
+		struct tm timeinfo;
+		time(&now);
+		localtime_r(&now, &timeinfo);
+		strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
+		printf("%s\n", strftime_buf);
+
 		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
 
 void SchedulerApp::handleModeQueue() {
-	scheduler_mode_t mode;
-	while (mModeQueue->receive((uint8_t*)&mode, 0)){
-		setModeUnsafe(mode);
+	char mode;
+	while (mModeQueue->receive(&mode, 0)){
+		setModeUnsafe((scheduler_mode_t)mode);
 	}
 }
 
 void SchedulerApp::setMode(scheduler_mode_t mode){
-	mModeQueue->send((uint8_t*)&mode);
+	mModeQueue->send((char*)&mode);
 }
 
 void SchedulerApp::setModeUnsafe(scheduler_mode_t mode){

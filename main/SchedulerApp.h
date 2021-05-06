@@ -45,9 +45,21 @@ public:
 
 	void removeWeeklySetpoint(uint16_t value){};
 
-	void setSetpoint(uint16_t value){mCurrntSetpoint = value;};
+	void setSetpoint(uint16_t value) {
+		mSetpoint = value;
+	};
 
-	uint16_t getSetpoint(){return mCurrntSetpoint;};
+	uint16_t getSetpoint() {
+		return mSetpoint;
+	};
+
+	static scheduler_mode_t incMode(scheduler_mode_t mode) {
+		scheduler_mode_t result = (SchedulerApp::scheduler_mode_t)((uint8_t)mode + 1);
+		if (result >= SchedulerApp::scheduler_mode_t::ModeAmount) {
+			result = SchedulerApp::scheduler_mode_t::ModeOff;
+		}
+		return result;
+	};
 
 private:
 	void handleModeQueue();
@@ -55,7 +67,7 @@ private:
 	void setModeUnsafe(scheduler_mode_t mode);
 	scheduler_mode_t getModeFromFile();
 
-	uint16_t mCurrntSetpoint;
+	uint16_t mSetpoint;
 	scheduler_mode_t mMode;
 	Queue* mModeQueue;
 	Mutex mMtx;
