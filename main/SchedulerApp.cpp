@@ -5,44 +5,67 @@
  *      Author: f73377
  */
 
+#include "SchedulerApp.h"
+
 #include <string.h>
-#include "SchedulerUl.h"
 #include "Core/MutexLocker.hpp"
 
 static const char * const writeMode = "wb";
 static const char * const modeFilePath = "/spiflash/mode";
 
-void SchedulerUl::setMode(scheduler_mode_t mode){
-	if (mMode != mode) {
-		mMtx.lock();
-		setModeUnsafe(mode);
-		mMtx.unlock();
+enum {
+	QueueModeLen = 5,
+	QueueModeItemSize = 1
+};
+
+SchedulerApp::SchedulerApp(){
+	create("SchedulerApp", 0, 1);
+	mMode = ModeUnknown;
+	mCurrntSetpoint = SetpointUnknown;
+
+	static uint8_t ucQueueModeStorageArea[QueueModeLen * QueueModeItemSize];
+	static Queue modeQueue = Queue(ucQueueModeStorageArea, QueueModeLen, QueueModeItemSize);
+	mModeQueue = &modeQueue;
+};
+
+void SchedulerApp::run() {
+	while (1) {
+		handleModeQueue();
+		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
 
-void SchedulerUl::setModeUnsafe(scheduler_mode_t mode){
+void SchedulerApp::handleModeQueue() {
+	scheduler_mode_t mode;
+	while (mModeQueue->receive((uint8_t*)&mode, 0)){
+		setModeUnsafe(mode);
+	}
+}
+
+void SchedulerApp::setMode(scheduler_mode_t mode){
+	mModeQueue->send((uint8_t*)&mode);
+}
+
+void SchedulerApp::setModeUnsafe(scheduler_mode_t mode){
 	if (mMode != mode) {
 		FILE* f = fopen(modeFilePath, writeMode);
 		if (f == NULL) {
 			printf("Failed to open mode file for writing\n");
 		}
 		fprintf(f, (char*)&mode);
-		fseek(f, 0, SEEK_END);
-		int size = ftell(f);
 		fclose(f);
-		printf("Mode file updated, size: %d\n", size);
 		mMode = mode;
 	}
 }
 
-SchedulerUl::scheduler_mode_t SchedulerUl::getMode() {
+SchedulerApp::scheduler_mode_t SchedulerApp::getMode() {
 	if (mMode == scheduler_mode_t::ModeUnknown) {
 		mMode = getModeFromFile();
 	}
 	return mMode;
 }
 
-SchedulerUl::scheduler_mode_t SchedulerUl::getModeFromFile() {
+SchedulerApp::scheduler_mode_t SchedulerApp::getModeFromFile() {
 	mMtx.lock();
 	scheduler_mode_t result;
 	printf("Reading file\n");

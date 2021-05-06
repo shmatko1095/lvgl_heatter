@@ -9,8 +9,9 @@
 #define GUIAPP_MAINSCREEN_H_
 
 #include "lvgl.h"
+
+#include "../SchedulerApp.h"
 #include "../Types.h"
-#include "../SchedulerUl.h"
 
 class MainScreen {
 public:
@@ -28,7 +29,7 @@ public:
     	return mBase;
     }
 
-    static void changeModeIcon(SchedulerUl::scheduler_mode_t mode);
+    static void changeModeIcon(SchedulerApp::scheduler_mode_t mode);
 
 private:
     lv_obj_t* createBase();

@@ -20,10 +20,10 @@ static void lvgl_init();
 static void lv_tick_task(void *arg);
 
 MainScreen GuiApp::mMainScreen;
-SchedulerUl::scheduler_mode_t GuiApp::mCurrentMode = SchedulerUl::scheduler_mode_t::ModeUnknown;
-SchedulerUl* GuiApp::mSchedulerPtr = nullptr;
+SchedulerApp::scheduler_mode_t GuiApp::mCurrentMode = SchedulerApp::scheduler_mode_t::ModeUnknown;
+SchedulerApp* GuiApp::mSchedulerPtr = nullptr;
 
-GuiApp::GuiApp(SchedulerUl* scheduler) {
+GuiApp::GuiApp(SchedulerApp* scheduler) {
 	mSchedulerPtr = scheduler;
 	create("GuiApp", 0, 1);
 }
@@ -66,9 +66,9 @@ void GuiApp::saveMode(void * scr) {
 
 void GuiApp::changeMode() {
 	printf("GuiApp::changeMode\n");
-	mCurrentMode = (SchedulerUl::scheduler_mode_t)((uint8_t)mCurrentMode + 1);
-	mCurrentMode >= SchedulerUl::scheduler_mode_t::ModeAmount ?
-			mCurrentMode = SchedulerUl::scheduler_mode_t::ModeOff : 0;
+	mCurrentMode = (SchedulerApp::scheduler_mode_t)((uint8_t)mCurrentMode + 1);
+	mCurrentMode >= SchedulerApp::scheduler_mode_t::ModeAmount ?
+			mCurrentMode = SchedulerApp::scheduler_mode_t::ModeOff : 0;
 	mMainScreen.changeModeIcon(mCurrentMode);
 	lv_async_call(saveMode, NULL);
 }

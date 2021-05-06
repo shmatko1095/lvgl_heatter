@@ -11,12 +11,12 @@
 
 #include "MainScreen.h"
 #include "../Core/BaseTask.hpp"
-#include "../SchedulerUl.h"
+#include "../SchedulerApp.h"
 
 #ifndef MAIN_GUIAPP_GUIAPP_H_
 #define MAIN_GUIAPP_GUIAPP_H_
 
-class GuiApp : public StaticBaseTask<4096*3> {
+class GuiApp : public StaticBaseTask<4096*2> {
 public:
 	enum {
 		MainScreenId,
@@ -25,7 +25,7 @@ public:
 		ScreenIdAmount
 	};
 
-	GuiApp(SchedulerUl* scheduler);
+	GuiApp(SchedulerApp* scheduler);
 	virtual ~GuiApp(){};
 
 	void init();
@@ -40,8 +40,8 @@ public:
 
 private:
 	static MainScreen mMainScreen;
-	static SchedulerUl::scheduler_mode_t mCurrentMode;
-	static SchedulerUl* mSchedulerPtr;
+	static SchedulerApp::scheduler_mode_t mCurrentMode;
+	static SchedulerApp* mSchedulerPtr;
 };
 #endif /* MAIN_GUIAPP_GUIAPP_H_ */
 

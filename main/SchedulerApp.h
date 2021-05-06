@@ -5,14 +5,15 @@
  *      Author: f73377
  */
 
-#ifndef SCHEDULERUL_H_
-#define SCHEDULERUL_H_
+#ifndef SCHEDULERAPP_H_
+#define SCHEDULERAPP_H_
 
 #include "Types.h"
 #include "SpiFfsStorrage.h"
 #include "Core/Mutex.hpp"
+#include "Core/Queue.hpp"
 
-class SchedulerUl {
+class SchedulerApp : public StaticBaseTask<4096> {
 public:
 	enum {
 		SetpointUnknown = 0xFFFF,
@@ -28,10 +29,9 @@ public:
 		ModeAmount = ModeUnknown,
 	} scheduler_mode_t;
 
-	SchedulerUl(){
-		mMode = ModeUnknown;
-		mCurrntSetpoint = SetpointUnknown;
-	};
+	SchedulerApp();
+
+	void run() override;
 
 	void setMode(scheduler_mode_t mode);
 
@@ -50,13 +50,15 @@ public:
 	uint16_t getSetpoint(){return mCurrntSetpoint;};
 
 private:
+	void handleModeQueue();
+
 	void setModeUnsafe(scheduler_mode_t mode);
 	scheduler_mode_t getModeFromFile();
 
-	scheduler_mode_t mMode;
 	uint16_t mCurrntSetpoint;
-
+	scheduler_mode_t mMode;
+	Queue* mModeQueue;
 	Mutex mMtx;
 };
 
-#endif /* SCHEDULERUL_H_ */
+#endif /* SCHEDULERAPP_H_ */

@@ -2,7 +2,7 @@ idf_component_register(
 SRCS main.cpp  
 	Application.cpp
 	Model.cpp 
-	SchedulerUl.cpp
+	SchedulerApp.cpp
 	SpiFfsStorrage.cpp
 	SpiFfsStorrage.h
 	Common.hpp

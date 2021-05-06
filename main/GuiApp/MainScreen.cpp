@@ -79,25 +79,25 @@ void MainScreen::actualTempLabelCb(lv_obj_t *obj, lv_event_t event){
 	}
 }
 
-void MainScreen::changeModeIcon(SchedulerUl::scheduler_mode_t mode) {
+void MainScreen::changeModeIcon(SchedulerApp::scheduler_mode_t mode) {
 	switch (mode) {
-	case SchedulerUl::scheduler_mode_t::ModeOff:
+	case SchedulerApp::scheduler_mode_t::ModeOff:
 	     lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 	     lv_img_set_src(mModeIcon, &shutdown);
 	     break;
-	case SchedulerUl::scheduler_mode_t::ModeManual:
+	case SchedulerApp::scheduler_mode_t::ModeManual:
 		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 		lv_img_set_src(mModeIcon, &shutdown);
 		break;
-	case SchedulerUl::scheduler_mode_t::ModeDaily:
+	case SchedulerApp::scheduler_mode_t::ModeDaily:
 		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 		lv_img_set_src(mModeIcon, &clock);
 		break;
-	case SchedulerUl::scheduler_mode_t::ModeWeekly:
+	case SchedulerApp::scheduler_mode_t::ModeWeekly:
 		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 		lv_img_set_src(mModeIcon, &calendar);
 		break;
-	case SchedulerUl::scheduler_mode_t::ModeDeicing:
+	case SchedulerApp::scheduler_mode_t::ModeDeicing:
 		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, SNOWFLAKE_COLOR);
 		lv_img_set_src(mModeIcon, &snowflake);
 		break;
