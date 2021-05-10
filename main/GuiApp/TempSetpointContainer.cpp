@@ -22,7 +22,7 @@ static void goToManualBtnHandler(lv_obj_t* obj, lv_event_t event);
 static void cancelBtnHandler(lv_obj_t* obj, lv_event_t event);
 
 static lv_obj_t* createTempSetpointContainer(lv_obj_t* par);
-static lv_obj_t* createButton(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t x_ofs, const char* text);
+static lv_obj_t* createButton(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t x_ofs, lv_color_t color, const char* text);
 static lv_obj_t* createCancelButton(lv_obj_t* par, lv_event_cb_t event_cb);
 static lv_obj_t* openRoller(lv_obj_t* par);
 static lv_obj_t* openRollerLabel(lv_obj_t* par);
@@ -31,8 +31,8 @@ void TempSetpointContainer::create(lv_obj_t* par) {
 	mContainerBase = createTempSetpointContainer(par);
 	openRollerLabel(mContainerBase);
 	openRoller(mContainerBase);
-	createButton(mContainerBase, keepModeBtnHandler, 50, "Keep current");
-	createButton(mContainerBase, goToManualBtnHandler, -50, "Go to manual");
+	createButton(mContainerBase, keepModeBtnHandler, 50, BLUE_BTN_COLOR, "Keep current");
+	createButton(mContainerBase, goToManualBtnHandler, -50, BLUE_BTN_COLOR, "Go to manual");
 	createCancelButton(mContainerBase, cancelBtnHandler);
 }
 
@@ -72,7 +72,7 @@ static lv_obj_t* createTempSetpointContainer(lv_obj_t* par) {
     return cont;
 }
 
-static lv_obj_t* createButton(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t x_ofs, const char* text) {
+static lv_obj_t* createButton(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t x_ofs, lv_color_t color, const char* text) {
     lv_obj_t* btn = lv_btn_create(par, NULL);
     lv_obj_set_event_cb(btn, event_cb);
     lv_obj_set_size(btn, 85, 30);
@@ -80,7 +80,7 @@ static lv_obj_t* createButton(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t 
 
     static lv_style_t style;
     lv_style_init(&style);
-    lv_style_set_bg_color(&style, LV_STATE_DEFAULT, OK_BTN_COLOR);
+    lv_style_set_bg_color(&style, LV_STATE_DEFAULT, color);
     lv_style_set_bg_color(&style, LV_STATE_PRESSED, PRESSED_BTN_COLOR);
     lv_style_set_text_color(&style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_style_set_border_width(&style, LV_STATE_DEFAULT, 0);
@@ -90,7 +90,7 @@ static lv_obj_t* createButton(lv_obj_t* par, lv_event_cb_t event_cb, lv_coord_t 
     lv_label_set_long_mode(label, LV_LABEL_LONG_SROLL_CIRC);
     lv_label_set_anim_speed(label, 15);
     lv_obj_set_width(label, 75);
-    lv_obj_align(label, par, LV_ALIGN_IN_BOTTOM_MID, x_ofs, -15);
+    lv_obj_align(label, par, LV_ALIGN_IN_BOTTOM_MID, x_ofs, -16);
     lv_label_set_text(label, text);
     return btn;
 }
@@ -115,6 +115,7 @@ static lv_obj_t* createCancelButton(lv_obj_t* par, lv_event_cb_t event_cb) {
 
 static lv_obj_t* openRoller(lv_obj_t* par) {
     lv_obj_t *roller = lv_roller_create(par, NULL);
+    lv_roller_set_selected(roller, 10, LV_ANIM_ON); //GuiApp::getSetpoint
     lv_roller_set_options(roller, tempRollerOptions, LV_ROLLER_MODE_INFINITE);
     lv_roller_set_visible_row_count(roller, 3);
     lv_roller_set_fix_width(roller, 80);

@@ -19,6 +19,9 @@
 class GuiApp : public StaticBaseTask<4096*2> {
 public:
 	enum {
+		InvalidValue = -1
+	};
+	enum {
 		MainScreenId,
 		ExtandedScreenId,
 		SettingsScreenId,
@@ -31,6 +34,14 @@ public:
 	void init();
 
 	void run() override;
+
+	static uint16_t getSetpoint(){
+		return mSchedulerPtr->getSetpoint();
+	}
+
+	static uint16_t getActual(){
+		return mSchedulerPtr->getSetpoint();
+	}
 
 	static void changeSetpoint(uint16_t setpoint, bool goToManual);
 

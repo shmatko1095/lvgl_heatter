@@ -23,8 +23,8 @@ enum {
 };
 
 enum {
-	linemeter_min = 0,
-	linemeter_max = 255,
+	linemeter_min = 100, //10 * 10°C
+	linemeter_max = 400, //40 * 10°C
 	linemeter_angle = 240,
 	linemeter_lines = 60,
 	linemeter_lines_width = 3,
@@ -58,13 +58,14 @@ void MainScreen::load(){
 }
 
 void MainScreen::run(){
-	static uint8_t cntSetpoint = 70;
-	static uint8_t cntActual = 0;
-	lv_linemeter_set_value(mLinemeterSetpoint, cntSetpoint);
-	lv_linemeter_set_value(mLinemeterActual, cntActual);
-	cntSetpoint+=1;
-	cntActual+=1;
-	lv_label_set_text_fmt(mActualTempLabel, "%d.%d°C", cntActual/10, cntActual%10);
+	uint16_t actual = GuiApp::getActual();
+	lv_linemeter_set_value(mLinemeterActual, GuiApp::getActual());
+	lv_linemeter_set_value(mLinemeterSetpoint, GuiApp::getSetpoint());
+	if (actual == GuiApp::InvalidValue) {
+		lv_label_set_text_fmt(mActualTempLabel, "--°C");
+	} else {
+		lv_label_set_text_fmt(mActualTempLabel, "%d.%d°C", actual/10, actual%10);
+	}
 }
 
 void tempSettingOpen(void * scr){

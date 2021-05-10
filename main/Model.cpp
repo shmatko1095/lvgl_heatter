@@ -6,11 +6,13 @@
  */
 
 #include "Model.hpp"
+#include "nvs_flash.h"
 
 void Model::preinit() {
 }
 
 void Model::init() {
+	nvs_flash_init();
 }
 
 //------------------------------------------------------------------------------

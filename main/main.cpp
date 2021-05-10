@@ -29,9 +29,6 @@ void app_main(void)
     static SpiFfsStorrage storrage = SpiFfsStorrage();
     static SchedulerApp schedulerUl = SchedulerApp();
     static GuiApp guiApp = GuiApp(&schedulerUl);
-
-//    static TaskExample example = TaskExample();
-//    static TaskExample example2 = TaskExample();
 }
 
 

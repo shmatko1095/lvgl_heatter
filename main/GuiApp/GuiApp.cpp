@@ -57,7 +57,7 @@ void GuiApp::run() {
 }
 
 void GuiApp::changeSetpoint(uint16_t setpoint, bool goToManual) {
-	mSchedulerPtr->setSetpoint(setpoint);
+	mSchedulerPtr->setManualSetpoint(setpoint);
 	if (goToManual) {
 		changeMode(SchedulerApp::scheduler_mode_t::ModeManual);
 	}
