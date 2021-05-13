@@ -16,8 +16,6 @@
 #define STORAGE_NAMESPACE "SCHEDULER_DATA"
 #define KEY_MANUAL_SETPOINT "KEY_MANUAL"
 #define KEY_DEICING "KEY_DEICING"
-#define KEY_WEEKLY "KEY_WEEKLY"
-#define KEY_DAILY "KEY_DAILY"
 #define KEY_MODE "KEY_MODE"
 
 static uint8_t setpointBlobBfr[1024];
@@ -33,13 +31,16 @@ enum {
 
 enum {
 	dailyRowLen = 11,
-	queueLen = 5
+	queueLen = 60
 };
 
 SchedulerApp::SchedulerApp(){
 	create("SchedulerApp", 0, 1);
+	mModifiedDay = 0;
+	mModifiedHours = 0;
+	mModifiedMin = 0;
 	mMode = ModeUnknown;
-	mSetpoint = SetpointUnknown;
+	mSetpoint = {-1, -1, -1, -1};
 
 	static uint8_t queueModeStorageArea[queueLen * sizeof(char)];
 	static Queue modeQueue = Queue(queueModeStorageArea, queueLen, sizeof(char));
@@ -75,54 +76,6 @@ void SchedulerApp::run() {
 	}
 }
 
-void SchedulerApp::handleModeQueue() {
-	char mode;
-	while (mModeQueue->receive(&mode, 0)){
-		setModeUnsafe((scheduler_mode_t)mode);
-	}
-}
-
-void SchedulerApp::handleDailyQueue() {
-	scheduler_setpoint_t value;
-	while (mDailyQueue->receive(&value, 0)){
-		addSetpointToFileUnsafe(KEY_DAILY, value);
-	}
-}
-
-void SchedulerApp::handleWeeklyQueue() {
-	scheduler_setpoint_t value;
-	while (mWeeklyQueue->receive(&value, 0)){
-		addSetpointToFileUnsafe(getWeeklyKey(value.day), value);
-	}
-}
-
-void SchedulerApp::handleManualSetpointQueue() {
-	int16_t value;
-	while (mSetpointQueue->receive(&value, 0)){
-		setManualSetpointUnsafe(value);
-	}
-}
-
-void SchedulerApp::setMode(scheduler_mode_t mode) {
-	mModeQueue->send((char*)&mode);
-}
-
-void SchedulerApp::setManualSetpoint(int16_t value) {
-	mSetpointQueue->send(&value);
-
-	static bool isSchedulerInited = false;
-	if (!isSchedulerInited) {
-	   for (uint8_t cnt = 0; cnt < 24; cnt++){
-	      scheduler_setpoint_t setpoint;
-	      setpoint.hour  = cnt;
-	      setpoint.min   = cnt;
-	      setpoint.value = cnt*10;
-	      addDailySetpoint(&setpoint);
-	   }
-	   isSchedulerInited = true;
-	}
-}
-
 void SchedulerApp::setModeUnsafe(scheduler_mode_t mode) {
 	if (mMode != mode) {
 		nvs_handle_t handle;
@@ -135,32 +88,33 @@ void SchedulerApp::setModeUnsafe(scheduler_mode_t mode) {
 }
 
 void SchedulerApp::setManualSetpointUnsafe(int16_t value) {
-	if (mSetpoint != value) {
+	if (mSetpoint.value != value) {
+		scheduler_setpoint_t setpoint = getSetpointForCurrentMode();
+		setpoint.value = value;
+
 		nvs_handle_t handle;
 		nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &handle);
 		nvs_set_i16(handle, KEY_MANUAL_SETPOINT, value);
 		nvs_commit(handle);
 		nvs_close(handle);
-		mSetpoint = value;
+
+		mSetpoint = setpoint;
+		mModifiedDay = setpoint.day;
+		mModifiedHours = setpoint.hour;
+		mModifiedMin = setpoint.min;
 	}
 }
 
-int16_t SchedulerApp::getManualSetpointFromFile() {
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getManualSetpointFromFile() {
 	mMtx.lock();
+	int16_t val = 0;
 	nvs_handle_t handle;
-	int16_t result = 0;
 	nvs_open(STORAGE_NAMESPACE, NVS_READONLY, &handle);
-	nvs_get_i16(handle, KEY_MANUAL_SETPOINT, &result);
+	nvs_get_i16(handle, KEY_MANUAL_SETPOINT, &val);
 	nvs_close(handle);
+	scheduler_setpoint_t setpoint = {-1, -1, -1, val};
 	mMtx.unlock();
-	return result;
-}
-
-SchedulerApp::scheduler_mode_t SchedulerApp::getMode() {
-	if (mMode == scheduler_mode_t::ModeUnknown) {
-		mMode = getModeFromFile();
-	}
-	return mMode;
+	return setpoint;
 }
 
 SchedulerApp::scheduler_mode_t SchedulerApp::getModeFromFile() {
@@ -172,14 +126,6 @@ SchedulerApp::scheduler_mode_t SchedulerApp::getModeFromFile() {
 	nvs_close(handle);
 	mMtx.unlock();
 	return result;
-}
-
-void SchedulerApp::addDailySetpoint(scheduler_setpoint_t* value) {
-	mDailyQueue->send(value);
-}
-
-void SchedulerApp::addWeeklySetpoint(scheduler_setpoint_t* value) {
-	mWeeklyQueue->send(value);
 }
 
 void SchedulerApp::addSetpointToFileUnsafe(const char* key, scheduler_setpoint_t value) {
@@ -217,7 +163,7 @@ void SchedulerApp::addSetpointToFileUnsafe(const char* key, scheduler_setpoint_t
     mMtx.unlock();
 }
 
-void SchedulerApp::setDeicingSetpoint(int16_t value){
+void SchedulerApp::setDeicingSetpoint(int16_t value) {
 	mMtx.lock();
 	nvs_handle_t handle;
 	nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &handle);
@@ -227,7 +173,7 @@ void SchedulerApp::setDeicingSetpoint(int16_t value){
 	mMtx.unlock();
 }
 
-int16_t SchedulerApp::getDeicingSetpointFromFile(){
+int16_t SchedulerApp::getDeicingSetpointFromFile() {
 	mMtx.lock();
 	nvs_handle_t handle;
 	uint16_t result = 0;
@@ -238,9 +184,11 @@ int16_t SchedulerApp::getDeicingSetpointFromFile(){
 	return result;
 }
 
-int16_t SchedulerApp::getSetpointFromFileUnsafe(const char* key, uint8_t hour, uint8_t min) {
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointFromFileUnsafe
+(const char* key, uint8_t hour, uint8_t min) {
+	mMtx.lock();
 	size_t size = 0;
-	int16_t result = SetpointUnknown;
+	scheduler_setpoint_t result = {-1, -1, -1, -1};
 	nvs_handle_t handle;
 
 	memset(setpointBlobBfr, 0, sizeof(setpointBlobBfr));
@@ -260,14 +208,14 @@ int16_t SchedulerApp::getSetpointFromFileUnsafe(const char* key, uint8_t hour, u
 			uint32_t seconsTo =   (valueTo.hour  +1)*minInHour*secInMin + (valueTo.min  +1)*secInMin;
 
 			if ((seconsInput >= seconsFrom) && (seconsInput < seconsTo)){
-				result = valueFrom.value;
+				result = valueFrom;
 				found = true;
 				break;
 			}
 			pos = pos + setpointSize;
 		};
 
-		//Find between last point<->midnight and midnight<->first point
+		///Find between last point<->midnight and midnight<->first point
 		if (!found) {
 			memcpy(&valueFrom, &setpointBlobBfr[0], setpointSize);
 			memcpy(&valueTo, &setpointBlobBfr[size-setpointSize], setpointSize);
@@ -276,15 +224,17 @@ int16_t SchedulerApp::getSetpointFromFileUnsafe(const char* key, uint8_t hour, u
 			bool isFromMidnightToFirstPoint = seconsInput < seconsFirst;
 			bool isFromLastPointToMidnight = (seconsInput >= seconsLast) && (seconsInput < (hourInDay+1)*minInHour*secInMin);
 			if (isFromMidnightToFirstPoint || isFromLastPointToMidnight){
-				result = valueTo.value;
+				result = valueTo;//looks like bug here
 			}
 		}
 	}
     nvs_close(handle);
+    mMtx.unlock();
 	return result;
 }
 
-void SchedulerApp::updateSetpoint() {
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForCurrentMode() {
+	scheduler_setpoint_t result = {-1, -1, -1, -1};
 	time_t now;
 	time(&now);
 	struct tm timeinfo;
@@ -294,30 +244,38 @@ void SchedulerApp::updateSetpoint() {
 //	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
 //	printf("%s\n", strftime_buf);
 
+	timeinfo.tm_hour = 0;
+	timeinfo.tm_min = timeinfo.tm_sec;
 	scheduler_mode_t mode = getMode();
 	switch (mode) {
 	case SchedulerApp::ModeOff:
-		mSetpoint = 0;
+		result = {-1, -1, -1, 0};
 		break;
 	case SchedulerApp::ModeDaily:
-		mSetpoint = getSetpointFromFileUnsafe(KEY_DAILY, timeinfo.tm_hour, timeinfo.tm_min);
+		result = getSetpointFromFileUnsafe(KEY_DAILY, timeinfo.tm_hour, timeinfo.tm_min);
 		break;
 	case SchedulerApp::ModeWeekly:
-		mSetpoint = getSetpointFromFileUnsafe(getWeeklyKey(timeinfo.tm_wday), timeinfo.tm_hour, timeinfo.tm_min);
+		result = getSetpointFromFileUnsafe(getWeeklyKey(timeinfo.tm_wday), timeinfo.tm_hour, timeinfo.tm_min);
 		break;
-	case SchedulerApp::ModeDeicing:
-		mSetpoint = getDeicingSetpointFromFile();
+	case SchedulerApp::ModeDeicing: {
+		int16_t val = getDeicingSetpointFromFile();
+		result = {-1, -1, -1, val};
+	}
 		break;
 	case SchedulerApp::ModeManual:
-		mSetpoint = getManualSetpointFromFile();
+		result = getManualSetpointFromFile();
 		break;
 	default:
 		break;
 	}
+	return result;
 }
 
-char* SchedulerApp::getWeeklyKey(uint8_t day) {
-	static char key[19];
-	sprintf(key, "%s%d\n", KEY_WEEKLY, day);
-	return key;
+void SchedulerApp::updateSetpoint(){
+	scheduler_setpoint_t currentSetpoint = getSetpointForCurrentMode();
+	if (currentSetpoint.day != mModifiedDay
+			|| currentSetpoint.hour != mModifiedHours
+			|| currentSetpoint.min != mModifiedMin) {
+		mSetpoint = currentSetpoint;
+	}
 }
