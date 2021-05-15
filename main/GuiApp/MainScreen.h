@@ -10,20 +10,26 @@
 
 #include "lvgl.h"
 
+#include "BaseScreen.h"
 #include "../SchedulerApp.h"
 #include "../Types.h"
 
-class MainScreen {
+class MainScreen : public BaseScreen {
 public:
-	MainScreen();
+	MainScreen() {
+		mLinemeterActual = nullptr;
+	    mLinemeterSetpoint = nullptr;
+	}
 
 	virtual ~MainScreen(){};
 
-	void init();
+	void init() override;
 
-    void load();
+	void load() override {
+		lv_scr_load(mBase);
+	}
 
-    void run();
+    void run() override;
 
     static lv_obj_t* getBase() {
     	return mBase;
@@ -32,7 +38,6 @@ public:
     static void changeModeIcon(SchedulerApp::scheduler_mode_t mode);
 
 private:
-    lv_obj_t* createBase();
     lv_obj_t* createLinemeterSetpoint(lv_obj_t *par);
     lv_obj_t* createLinemeterActual(lv_obj_t *par);
 
@@ -44,8 +49,6 @@ private:
     static void modeIconCb(lv_obj_t *obj, lv_event_t event);
     static void handleCurrentModeCd(lv_obj_t *obj, uint8_t mode);
 
-
-    static lv_obj_t* createNextScreenButton(lv_obj_t *par, lv_event_cb_t cb);
     static void nextScreenButtonCb(lv_obj_t *obj, lv_event_t event);
 
     lv_obj_t* mLinemeterSetpoint;
@@ -55,8 +58,6 @@ private:
 
     static lv_obj_t* mModeButton;
     static lv_obj_t* mModeIcon;
-
-    static lv_obj_t* mNextScreenButton;
 
 };
 

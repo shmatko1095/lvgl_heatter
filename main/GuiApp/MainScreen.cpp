@@ -7,7 +7,6 @@
 
 #include "GuiApp.h"
 #include "MainScreen.h"
-#include "Colors.hpp"
 #include "esp_system.h"
 #include "TempSetpointContainer.h"
 
@@ -15,12 +14,6 @@ LV_IMG_DECLARE(calendar);
 LV_IMG_DECLARE(clock);
 LV_IMG_DECLARE(shutdown);
 LV_IMG_DECLARE(snowflake);
-LV_IMG_DECLARE(more);
-
-enum {
-	button_w = 80,
-	button_h = 40,
-};
 
 enum {
 	linemeter_min = 100, //10 * 10°C
@@ -37,10 +30,6 @@ lv_obj_t* MainScreen::mBase = nullptr;
 lv_obj_t* MainScreen::mActualTempLabel = nullptr;
 lv_obj_t* MainScreen::mModeButton = nullptr;
 lv_obj_t* MainScreen::mModeIcon = nullptr;
-lv_obj_t* MainScreen::mNextScreenButton = nullptr;
-
-MainScreen::MainScreen() {
-}
 
 void MainScreen::init(){
 	mBase = createBase();
@@ -50,11 +39,7 @@ void MainScreen::init(){
 	mActualTempLabel = createActualTempLabel(mBase);
 	mModeButton = MainScreen::createModeButton(mBase, MainScreen::modeIconCb);
 	mModeIcon = MainScreen::createModeIcon(mModeButton, &calendar);
-	mNextScreenButton = MainScreen::createNextScreenButton(mBase, MainScreen::nextScreenButtonCb);
-}
-
-void MainScreen::load(){
-	lv_scr_load(mBase);
+	mNextScreenButton = createNextScreenButton(mBase, MainScreen::nextScreenButtonCb);
 }
 
 void MainScreen::run(){
@@ -175,27 +160,6 @@ lv_obj_t* MainScreen::createModeIcon(lv_obj_t *par, const lv_img_dsc_t* img) {
 	return icon;
 }
 
-lv_obj_t* MainScreen::createNextScreenButton(lv_obj_t *par, lv_event_cb_t cb) {
-    lv_obj_t* btn = lv_btn_create(par, NULL);
-    lv_obj_set_event_cb(btn, cb);
-    lv_obj_set_size(btn, button_w, button_h);
-    lv_obj_align(btn, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-
-	static lv_style_t style;
-    lv_style_init(&style);
-    lv_style_set_bg_opa(&style, LV_STATE_DEFAULT, 0);
-    lv_style_set_bg_opa(&style, LV_STATE_PRESSED, LV_OPA_80);
-    lv_style_set_bg_color(&style, LV_STATE_PRESSED, PRESSED_BTN_COLOR);
-    lv_style_set_border_width(&style, LV_STATE_DEFAULT, 0);
-    lv_style_set_outline_width(&style, LV_STATE_DEFAULT, 0);
-    lv_obj_add_style(btn, LV_BTN_PART_MAIN, &style);
-
-    static lv_obj_t* img = lv_img_create(btn, NULL);
-    lv_img_set_src(img, &more);
-    lv_obj_set_style_local_image_opa(img, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_40);
-	return btn;
-}
-
 lv_obj_t* MainScreen::createLinemeterActual(lv_obj_t *par) {
 	static lv_style_t style_box;
 	lv_style_init(&style_box);
@@ -247,14 +211,5 @@ lv_obj_t* MainScreen::createLinemeterSetpoint(lv_obj_t *par) {
 	lv_obj_add_style(linemeter, LV_LINEMETER_PART_MAIN, &style_box);
 
 	return linemeter;
-}
-
-lv_obj_t* MainScreen::createBase() {
-	lv_obj_t* base = lv_obj_create(NULL, NULL);
-	static lv_style_t style_box;
-	lv_style_init(&style_box);
-	lv_style_set_bg_color(&style_box, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-	lv_obj_add_style(base, LV_LINEMETER_PART_MAIN, &style_box);
-	return base;
 }
 

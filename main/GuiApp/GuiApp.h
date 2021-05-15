@@ -10,6 +10,7 @@
 #include "freertos/semphr.h"
 
 #include "MainScreen.h"
+#include "InfoScreen.h"
 #include "../Core/BaseTask.hpp"
 #include "../SchedulerApp.h"
 
@@ -23,7 +24,7 @@ public:
 	};
 	enum {
 		MainScreenId,
-		ExtandedScreenId,
+		InfoScreenId,
 		SettingsScreenId,
 		ScreenIdAmount
 	};
@@ -57,6 +58,9 @@ public:
 
 private:
 	static MainScreen mMainScreen;
+	static InfoScreen mInfoScreen;
+	static BaseScreen* mCurrentScreen;
+
 	static SchedulerApp::scheduler_mode_t mCurrentMode;
 	static SchedulerApp* mSchedulerPtr;
 };

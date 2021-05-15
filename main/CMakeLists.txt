@@ -19,7 +19,9 @@ SRCS main.cpp
 	Core/SYSTime.hpp
 	
 	GuiApp/GuiApp.cpp
+	GuiApp/BaseScreen.cpp	
 	GuiApp/MainScreen.cpp
+	GuiApp/InfoScreen.cpp	
 	GuiApp/TempSetpointContainer.cpp
 	GuiApp/res/clock.c	
 	GuiApp/res/calendar.c		

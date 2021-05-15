@@ -20,6 +20,9 @@ static void lvgl_init();
 static void lv_tick_task(void *arg);
 
 MainScreen GuiApp::mMainScreen;
+InfoScreen GuiApp::mInfoScreen;
+BaseScreen* GuiApp::mCurrentScreen = nullptr;
+
 SchedulerApp::scheduler_mode_t GuiApp::mCurrentMode = SchedulerApp::scheduler_mode_t::ModeUnknown;
 SchedulerApp* GuiApp::mSchedulerPtr = nullptr;
 
@@ -30,12 +33,15 @@ GuiApp::GuiApp(SchedulerApp* scheduler) {
 
 void GuiApp::init() {
 	lvgl_init();
-
 	mCurrentMode = mSchedulerPtr->getMode();
 
+	mInfoScreen.init();
 	mMainScreen.init();
+
 	mMainScreen.load();
 	mMainScreen.changeModeIcon(mCurrentMode);
+	mCurrentScreen = &mMainScreen;
+
 }
 
 void GuiApp::run() {
@@ -46,7 +52,7 @@ void GuiApp::run() {
 		vTaskDelay(pdMS_TO_TICKS(10));
 		if (pdTRUE == xSemaphoreTake(xGuiSemaphore, portMAX_DELAY)) {
 
-			mMainScreen.run();
+			mCurrentScreen->run();
 
 			lv_task_handler();
 			xSemaphoreGive(xGuiSemaphore);
@@ -64,7 +70,18 @@ void GuiApp::changeSetpoint(uint16_t setpoint, bool goToManual) {
 }
 
 void GuiApp::changeScreen(uint8_t currentScreenId) {
-	printf("GuiApp::changeScreen\n");
+	switch (currentScreenId) {
+	case MainScreenId:
+		mCurrentScreen = &mInfoScreen;
+		break;
+	case InfoScreenId:
+		mCurrentScreen = &mMainScreen;
+		break;
+	case SettingsScreenId:
+	default:
+		break;
+	}
+	mCurrentScreen->load();
 }
 
 void GuiApp::changeMode(SchedulerApp::scheduler_mode_t mode) {
