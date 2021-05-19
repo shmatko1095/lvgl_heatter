@@ -10,13 +10,20 @@
 
 #include "lvgl.h"
 
+#include "Meter.h"
 #include "BaseScreen.h"
 #include "../SchedulerApp.h"
 #include "../Types.h"
 
 class InfoScreen : public BaseScreen {
 public:
-	InfoScreen(){
+	InfoScreen() {
+		mInTemp = nullptr;
+		mOutTemp = nullptr;
+		mLoadMeter = nullptr;
+		mPressure = nullptr;
+		mBase = nullptr;
+		mContainer = nullptr;
 	}
 
 	virtual ~InfoScreen(){};
@@ -29,10 +36,28 @@ public:
 
     void run() override;
 
+    static lv_obj_t* getBase() {
+    	return mBase;
+    }
+
 private:
+    lv_obj_t* createMeterContainer(lv_obj_t* par);
+
+    lv_obj_t* createActualTempLabel(lv_obj_t *par);
+    static void actualTempLabelCb(lv_obj_t *obj, lv_event_t event);
+    static void tempSettingOpen(void* scr);
+
+    lv_obj_t* createChart(lv_obj_t* par);
+
     static void nextScreenButtonCb(lv_obj_t *obj, lv_event_t event);
 
+    Meter *mInTemp;
+    Meter *mOutTemp;
+    Meter *mLoadMeter;
+    Meter *mPressure;
+
     static lv_obj_t* mBase;
+    lv_obj_t* mContainer;
 
 };
 

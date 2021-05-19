@@ -18,6 +18,7 @@
 #define CANCEL_BTN_COLOR			lv_color_hex(0x373D44)
 #define BLUE_BTN_COLOR			    lv_color_hex(0x01A4FF)
 #define GREEN_BTN_COLOR			    lv_color_hex(0x037c50)
+#define DARK_GRAY                   lv_color_hex(0x242426)
 
 #define REFLOW_OVEN_LIGHT           lv_color_hex(0xf3f8fe)
 #define REFLOW_OVEN_GRAY            lv_color_hex(0x7f8c8d)

@@ -36,6 +36,7 @@ protected:
 	lv_obj_t* createBase();
 	lv_obj_t* createNextScreenButton(lv_obj_t *par, lv_event_cb_t cb);
 
+	lv_obj_t* mActualTempLabel;
 	lv_obj_t* mNextScreenButton;
 	lv_obj_t* mNextScreenButtonImg;
 
