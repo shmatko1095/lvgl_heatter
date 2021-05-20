@@ -21,6 +21,7 @@ static void lv_tick_task(void *arg);
 
 MainScreen GuiApp::mMainScreen;
 InfoScreen GuiApp::mInfoScreen;
+SettingsScreen GuiApp::mSettingsScreen;
 BaseScreen* GuiApp::mCurrentScreen = nullptr;
 
 SchedulerApp::scheduler_mode_t GuiApp::mCurrentMode = SchedulerApp::scheduler_mode_t::ModeUnknown;
@@ -33,11 +34,11 @@ GuiApp::GuiApp(SchedulerApp* scheduler) {
 
 void GuiApp::init() {
 	lvgl_init();
-	mCurrentMode = mSchedulerPtr->getMode();
-
 	mInfoScreen.init();
 	mMainScreen.init();
+	mSettingsScreen.init();
 
+	mCurrentMode = mSchedulerPtr->getMode();
 	mMainScreen.load();
 	mMainScreen.changeModeIcon(mCurrentMode);
 	mCurrentScreen = &mMainScreen;
@@ -75,9 +76,11 @@ void GuiApp::changeScreen(uint8_t currentScreenId) {
 		mCurrentScreen = &mInfoScreen;
 		break;
 	case InfoScreenId:
-		mCurrentScreen = &mMainScreen;
+		mCurrentScreen = &mSettingsScreen;
 		break;
 	case SettingsScreenId:
+		mCurrentScreen = &mMainScreen;
+		break;
 	default:
 		break;
 	}

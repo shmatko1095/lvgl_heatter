@@ -11,6 +11,7 @@
 
 #include "MainScreen.h"
 #include "InfoScreen.h"
+#include "SettingsScreen.h"
 #include "../Core/BaseTask.hpp"
 #include "../SchedulerApp.h"
 
@@ -59,6 +60,7 @@ public:
 private:
 	static MainScreen mMainScreen;
 	static InfoScreen mInfoScreen;
+	static SettingsScreen mSettingsScreen;
 	static BaseScreen* mCurrentScreen;
 
 	static SchedulerApp::scheduler_mode_t mCurrentMode;

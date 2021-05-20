@@ -105,7 +105,7 @@ void MainScreen::nextScreenButtonCb(lv_obj_t *obj, lv_event_t event) {
 }
 
 lv_obj_t* MainScreen::createActualTempLabel(lv_obj_t *par) {
-    lv_obj_t * label = lv_label_create(par, NULL);
+    lv_obj_t* label = lv_label_create(par, NULL);
     lv_label_set_text(label, LV_SYMBOL_REFRESH);
     lv_obj_set_auto_realign(label, true);
     lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, 0);

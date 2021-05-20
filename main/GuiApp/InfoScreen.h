@@ -22,7 +22,6 @@ public:
 		mOutTemp = nullptr;
 		mLoadMeter = nullptr;
 		mPressure = nullptr;
-		mBase = nullptr;
 		mContainer = nullptr;
 	}
 
