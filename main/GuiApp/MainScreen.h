@@ -12,7 +12,7 @@
 
 #include "BaseScreen.h"
 #include "../SchedulerApp.h"
-#include "../Types.h"
+#include "../Common/Types.h"
 
 class MainScreen : public BaseScreen {
 public:

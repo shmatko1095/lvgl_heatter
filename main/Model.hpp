@@ -9,7 +9,7 @@
 #ifndef APP_MODEL_HPP_
 #define APP_MODEL_HPP_
 
-#include "Types.h"
+#include "Common/Types.h"
 
 /** @brief BSP model description and initialization class
  *  @ingroup model_bsp_tree

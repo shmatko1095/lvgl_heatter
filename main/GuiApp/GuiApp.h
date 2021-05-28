@@ -5,7 +5,7 @@
  *      Author: f73377
  */
 
-#include "../Types.h"
+#include "../Common/Types.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 

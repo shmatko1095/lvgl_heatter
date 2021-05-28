@@ -8,7 +8,7 @@
 #ifndef CORE_QUEUE_HPP_
 #define CORE_QUEUE_HPP_
 
-#include "../Types.h"
+#include "../Common/Types.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 

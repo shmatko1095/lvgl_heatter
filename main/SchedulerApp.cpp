@@ -9,7 +9,6 @@
 
 #include <time.h>
 #include <string.h>
-#include "Core/MutexLocker.hpp"
 #include "nvs_flash.h"
 #include "nvs.h"
 
@@ -62,8 +61,6 @@ SchedulerApp::SchedulerApp(){
 void SchedulerApp::run() {
 	setenv("TZ", "CST-8", 1);
 	tzset();
-
-//	nvs_flash_erase();
 
 	while (1) {
 		handleModeQueue();

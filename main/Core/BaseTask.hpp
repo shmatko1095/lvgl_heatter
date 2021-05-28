@@ -9,10 +9,10 @@
 #define SOURCE_KERNEL_RTOS_BASETASK_HPP_
 
 #include "SYSPort.hpp"
-#include "../Types.h"
+#include "../Common/Types.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "../Common.hpp"
+#include "../Common/Common.hpp"
 #include "../../config/sdkconfig.h"
 
 /**@brief Interface for RTOS task implementation

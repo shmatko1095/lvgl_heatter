@@ -10,7 +10,7 @@
 
 #include "lvgl.h"
 #include "BaseScreen.h"
-#include "../Types.h"
+#include "../Common/Types.h"
 
 class SettingsScreen : public BaseScreen {
 public:
@@ -34,6 +34,9 @@ public:
 private:
     lv_obj_t* createMeterContainer(lv_obj_t* par);
     static void nextScreenButtonCb(lv_obj_t *obj, lv_event_t event);
+
+    lv_obj_t* createSettingsList(lv_obj_t* par, lv_event_cb_t cb);
+    static void settingslistButtonCb(lv_obj_t *obj, lv_event_t event);
 
     static lv_obj_t* mBase;
     lv_obj_t* mContainer;

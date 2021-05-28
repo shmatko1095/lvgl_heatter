@@ -8,7 +8,7 @@
 #ifndef CORE_MUTEX_HPP_
 #define CORE_MUTEX_HPP_
 
-#include "../Types.h"
+#include "../Common/Types.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 

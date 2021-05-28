@@ -17,45 +17,6 @@ SpiFfsStorrage::SpiFfsStorrage() {
 	init();
 }
 
-//FILE* SpiFfsStorrage::openFile(const char *file, const char * mode) {
-//	FILE* f = fopen(file, mode);
-//	if (f == NULL) {
-//		printf("Failed to open file for writing\n");
-//	}
-//	return f;
-//}
-//
-//void SpiFfsStorrage::run(){
-//	printf("Opening file\n");
-//	static FILE *f = fopen(PATH"/hello.txt", "wb");
-//	if (f == NULL) {
-//		printf("Failed to open file for writing\n");
-//	    return;
-//	}
-//	fprintf(f, "written using ESP-IDF %s\n", esp_get_idf_version());
-//	fclose(f);
-//	printf("File written\n");
-//
-//    while (true) {
-//        printf("Reading file\n");
-//        f = fopen(PATH"/hello.txt", "rb");
-//        if (f == NULL) {
-//        	printf("Failed to open file for reading\n");
-//            return;
-//        }
-//        char line[128];
-//        fgets(line, sizeof(line), f);
-//        fclose(f);
-//        // strip newline
-//        char *pos = strchr(line, '\n');
-//        if (pos) {
-//            *pos = '\0';
-//        }
-//        printf("Read from file: '%s'\n", line);
-//        vTaskDelay(200 / portTICK_PERIOD_MS);
-//    }
-//}
-
 void SpiFfsStorrage::init() {
     const esp_vfs_fat_mount_config_t mount_config = {
     		.format_if_mount_failed = true,

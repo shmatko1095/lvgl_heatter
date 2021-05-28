@@ -9,7 +9,7 @@
 #ifndef __E_TIME_HPP__
 #define __E_TIME_HPP__
 
-#include "../Types.h"
+#include "../Common/Types.h"
 
 /**@brief Time measuring helper
  * @ingroup common_helpers

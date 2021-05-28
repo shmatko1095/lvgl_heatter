@@ -13,7 +13,7 @@
 #include "Meter.h"
 #include "BaseScreen.h"
 #include "../SchedulerApp.h"
-#include "../Types.h"
+#include "../Common/Types.h"
 
 class InfoScreen : public BaseScreen {
 public:

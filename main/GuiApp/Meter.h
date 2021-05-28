@@ -9,7 +9,7 @@
 #define GUIAPP_METER_H_
 
 #include "Colors.hpp"
-#include "../Types.h"
+#include "../Common/Types.h"
 #include "lvgl.h"
 
 class Meter {

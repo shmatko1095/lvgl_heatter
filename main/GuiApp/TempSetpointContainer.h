@@ -10,7 +10,7 @@
 
 #include "lvgl.h"
 #include "Colors.hpp"
-#include "../Types.h"
+#include "../Common/Types.h"
 
 class TempSetpointContainer {
 public:

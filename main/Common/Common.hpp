@@ -10,8 +10,9 @@
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
-//#include "Core.hpp"
+#include <assert.h>
 #include "Types.h"
+//#include "Core.hpp"
 //#include "Compiler.hpp"
 
 #define SIZE_OF_ARRAY(arr) (sizeof(arr)/sizeof(arr[0]))
