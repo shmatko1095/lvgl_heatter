@@ -18,12 +18,12 @@ class EventController {
 public:
 	static void registerReceiver(IEventReceiver &receiver) {
 		EventController &controller = EventController::getInstance();
-		controller.runnables.addLast(receiver.item);
+		controller.handlers.addLast(receiver.item);
 	}
 
 	static void pushEvent(IEventReceiver::EventId event, void* params) {
 		EventController &controller = EventController::getInstance();
-		List::Itterator itt = controller.runnables.getItterator();
+		List::Itterator itt = controller.handlers.getItterator();
 		while(itt) {
 			containerOf(*(itt++), &IEventReceiver::item).onReceive(event, params);
 		}
@@ -35,7 +35,7 @@ private:
 	    return controller;
 	}
 
-	List runnables;
+	List handlers;
 };
 
 #endif /* EVENTCONTROLLER_H_ */

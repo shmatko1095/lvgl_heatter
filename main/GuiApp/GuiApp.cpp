@@ -22,9 +22,8 @@ static void lv_tick_task(void *arg);
 MainScreen GuiApp::mMainScreen;
 InfoScreen GuiApp::mInfoScreen;
 SettingsScreen GuiApp::mSettingsScreen;
-BaseScreen* GuiApp::mCurrentScreen = nullptr;
 
-SchedulerApp::scheduler_mode_t GuiApp::mCurrentMode = SchedulerApp::scheduler_mode_t::ModeUnknown;
+BaseScreen* GuiApp::mCurrentScreen = nullptr;
 SchedulerApp* GuiApp::mSchedulerPtr = nullptr;
 
 GuiApp::GuiApp(SchedulerApp* scheduler) {
@@ -38,9 +37,8 @@ void GuiApp::init() {
 	mMainScreen.init();
 	mSettingsScreen.init();
 
-	mCurrentMode = mSchedulerPtr->getMode();
 	mMainScreen.load();
-	mMainScreen.changeModeIcon(mCurrentMode);
+	mMainScreen.setModeIcon(getMode());
 	mCurrentScreen = &mMainScreen;
 
 }
@@ -64,9 +62,9 @@ void GuiApp::run() {
 }
 
 void GuiApp::changeSetpoint(uint16_t setpoint, bool goToManual) {
-	mSchedulerPtr->setManualSetpoint(setpoint);
+	mSchedulerPtr->setSetpoint(setpoint);
 	if (goToManual) {
-		changeMode(SchedulerApp::scheduler_mode_t::ModeManual);
+		setMode(SchedulerApp::scheduler_mode_t::ModeManual);
 	}
 }
 
@@ -85,17 +83,6 @@ void GuiApp::changeScreen(uint8_t currentScreenId) {
 		break;
 	}
 	mCurrentScreen->load();
-}
-
-void GuiApp::changeMode(SchedulerApp::scheduler_mode_t mode) {
-	mCurrentMode = mode;
-	mMainScreen.changeModeIcon(mCurrentMode);
-	mSchedulerPtr->setMode(mCurrentMode);
-}
-
-void GuiApp::incMode() {
-	SchedulerApp::scheduler_mode_t mode = SchedulerApp::incMode(mCurrentMode);
-	changeMode(mode);
 }
 
 static void lvgl_init() {

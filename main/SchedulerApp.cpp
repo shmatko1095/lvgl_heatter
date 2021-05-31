@@ -6,6 +6,7 @@
  */
 
 #include "SchedulerApp.h"
+#include "Connection/MqttEventController.h"
 
 #include <time.h>
 #include <string.h>
@@ -16,9 +17,6 @@
 #define KEY_MANUAL_SETPOINT "KEY_MANUAL"
 #define KEY_DEICING "KEY_DEICING"
 #define KEY_MODE "KEY_MODE"
-
-static uint8_t setpointBlobBfr[1024];
-static const size_t setpointSize = sizeof(SchedulerApp::scheduler_setpoint_t);
 
 enum {
 	secInMin = 60,
@@ -33,28 +31,41 @@ enum {
 	queueLen = 60
 };
 
-SchedulerApp::SchedulerApp(){
+static uint8_t setpointBlobBfr[1024];
+static const size_t setpointSize = sizeof(SchedulerApp::scheduler_setpoint_t);
+
+static IMqttEventReceiver::MqttTopicDesc Mode = {
+		.qos = 1, .topic = "/Mode",
+	};
+static IMqttEventReceiver::MqttTopicDesc Setpoint = {
+		.qos = 1, .topic = "/Setpoint",
+	};
+
+static uint8_t queueModeStorageArea[queueLen * sizeof(char)];
+static uint8_t dailyQueueStorageArea[queueLen * setpointSize];
+static uint8_t weeklyQueueStorageArea[queueLen * setpointSize];
+static uint8_t queueSetpointStorageArea[queueLen * sizeof(int16_t)];
+
+static Queue modeQueue = Queue(queueModeStorageArea, queueLen, sizeof(char));
+static Queue dailyQueue = Queue(dailyQueueStorageArea, queueLen, setpointSize);
+static Queue weeklyQueue = Queue(weeklyQueueStorageArea, queueLen, setpointSize);
+static Queue setpointQueue = Queue(queueSetpointStorageArea, queueLen, sizeof(int16_t));
+
+SchedulerApp::SchedulerApp() {
 	create("SchedulerApp", 0, 1);
+	addTopic((IMqttEventReceiver::MqttTopicDesc&)Mode);
+	addTopic((IMqttEventReceiver::MqttTopicDesc&)Setpoint);
+	MqttEventController::registerReceiver(*this);
+
 	mModifiedDay = 0;
 	mModifiedHours = 0;
 	mModifiedMin = 0;
 	mMode = ModeUnknown;
 	mSetpoint = {-1, -1, -1, -1};
 
-	static uint8_t queueModeStorageArea[queueLen * sizeof(char)];
-	static Queue modeQueue = Queue(queueModeStorageArea, queueLen, sizeof(char));
 	mModeQueue = &modeQueue;
-
-	static uint8_t dailyQueueStorageArea[queueLen * setpointSize];
-    static Queue dailyQueue = Queue(dailyQueueStorageArea, queueLen, setpointSize);
     mDailyQueue = &dailyQueue;
-
-    static uint8_t weeklyQueueStorageArea[queueLen * setpointSize];
-    static Queue weeklyQueue = Queue(weeklyQueueStorageArea, queueLen, setpointSize);
     mWeeklyQueue = &weeklyQueue;
-
-    static uint8_t queueSetpointStorageArea[queueLen * sizeof(int16_t)];
-    static Queue setpointQueue = Queue(queueSetpointStorageArea, queueLen, sizeof(int16_t));
     mSetpointQueue = &setpointQueue;
 };
 
@@ -66,10 +77,18 @@ void SchedulerApp::run() {
 		handleModeQueue();
 		handleDailyQueue();
 		handleWeeklyQueue();
-		handleManualSetpointQueue();
+		handleSetpointQueue();
 		updateSetpoint();
 
 		vTaskDelay(pdMS_TO_TICKS(500));
+	}
+}
+
+void SchedulerApp::onReceive(char* topic, size_t topicLen, char* data, size_t dataLen) {
+	if (memcmp(topic, Mode.topic, topicLen) == 0) {
+		mqttModeHandler(data, dataLen);
+	} else if (memcmp(topic, Setpoint.topic, topicLen) == 0){
+		mqttSetpointHandler(data, dataLen);
 	}
 }
 
@@ -84,7 +103,7 @@ void SchedulerApp::setModeUnsafe(scheduler_mode_t mode) {
 	}
 }
 
-void SchedulerApp::setManualSetpointUnsafe(int16_t value) {
+void SchedulerApp::setSetpointUnsafe(int16_t value) {
 	if (mSetpoint.value != value) {
 		scheduler_setpoint_t setpoint = getSetpointForCurrentMode();
 		setpoint.value = value;

@@ -8,15 +8,19 @@
 #ifndef SCHEDULERAPP_H_
 #define SCHEDULERAPP_H_
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "Common/Types.h"
 #include "SpiFfsStorrage.h"
 #include "Core/Mutex.hpp"
 #include "Core/Queue.hpp"
+//#include "Connection/MqttApp.h"
+#include "Connection/IMqttEventReceiver.hpp"
 
 #define KEY_DAILY "KEY_DAILY"
 #define KEY_WEEKLY "KEY_WEEKLY"
 
-class SchedulerApp : public StaticBaseTask<4096*3> {
+class SchedulerApp : public StaticBaseTask<4096*2>, public IMqttEventReceiver {
 public:
 	enum {
 		SetpointUnknown = -1,
@@ -43,6 +47,8 @@ public:
 
 	void run() override;
 
+	void onReceive(char* topic, size_t topicLen, char* data, size_t dataLen);
+
 	void setMode(scheduler_mode_t mode){
 		mModeQueue->send((char*)&mode);
 	}
@@ -68,7 +74,7 @@ public:
 
 	void removeWeeklySetpoint(scheduler_setpoint_t value){};
 
-	void setManualSetpoint(int16_t value) {
+	void setSetpoint(int16_t value) {
 		mSetpointQueue->send(&value);
 
 		static bool isSchedulerInited = false;
@@ -97,47 +103,68 @@ public:
 	};
 
 private:
+	void mqttModeHandler(char* data, size_t dataLen) {
+		if (dataLen == 1) {
+			int mode = atoi(data);
+			setMode((scheduler_mode_t)mode);
+		}
+	}
+
+	void mqttSetpointHandler(char* data, size_t dataLen) {
+		if (dataLen > 0 && dataLen < 4) {
+			int16_t value = atoi(data);
+			setSetpoint(value);
+		}
+	}
+
 	void handleModeQueue() {
 		char mode;
-		while (mModeQueue->receive(&mode, 0)){
-			mMtx.lock();
+		mMtx.lock();
+		while (mModeQueue->getCount()){
+			mModeQueue->receive(&mode, 0);
 			setModeUnsafe((scheduler_mode_t)mode);
-			mMtx.unlock();
+
+//			static char data[3];
+//			int len = sprintf(data, "%d", mode);
+//			sendMessage("/Mode", data, len);
+//			MqttApp::publishMessage("/Mode", data, len, mQos, 0);
+
 		}
+		mMtx.unlock();
 	}
 
 	void handleDailyQueue() {
 		scheduler_setpoint_t value;
+		mMtx.lock();
 		while (mDailyQueue->receive(&value, 0)){
-			mMtx.lock();
 			addSetpointToFileUnsafe(KEY_DAILY, value);
-			mMtx.unlock();
 		}
+		mMtx.unlock();
 	}
 
 	void handleWeeklyQueue() {
 		scheduler_setpoint_t value;
+		mMtx.lock();
 		while (mWeeklyQueue->receive(&value, 0)){
-			mMtx.lock();
 			addSetpointToFileUnsafe(getWeeklyKey(value.day), value);
-			mMtx.unlock();
 		}
+		mMtx.unlock();
 	}
 
-	void handleManualSetpointQueue() {
+	void handleSetpointQueue() {
 		int16_t value;
+		mMtx.lock();
 		while (mSetpointQueue->receive(&value, 0)){
-			mMtx.lock();
-			setManualSetpointUnsafe(value);
-			mMtx.unlock();
+			setSetpointUnsafe(value);
 		}
+		mMtx.unlock();
 	}
 
 	void addSetpointToFileUnsafe(const char* key, scheduler_setpoint_t value);
 
 	scheduler_setpoint_t getSetpointFromFileUnsafe(const char* key, uint8_t hour, uint8_t min);
 
-	void setManualSetpointUnsafe(int16_t value);
+	void setSetpointUnsafe(int16_t value);
 
 	scheduler_setpoint_t getManualSetpointFromFile();
 

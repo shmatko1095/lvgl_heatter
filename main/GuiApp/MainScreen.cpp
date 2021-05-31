@@ -46,11 +46,14 @@ void MainScreen::run(){
 	uint16_t actual = GuiApp::getActual();
 	lv_linemeter_set_value(mLinemeterActual, GuiApp::getActual());
 	lv_linemeter_set_value(mLinemeterSetpoint, GuiApp::getSetpoint());
-	if (actual == GuiApp::InvalidValue) {
+	if (actual == (uint16_t)GuiApp::InvalidValue) {
 		lv_label_set_text_fmt(mActualTempLabel, "--°C");
 	} else {
 		lv_label_set_text_fmt(mActualTempLabel, "%d.%d°C", actual/10, actual%10);
 	}
+
+
+	setModeIcon(GuiApp::getMode());
 }
 
 void tempSettingOpen(void * scr){
@@ -64,7 +67,7 @@ void MainScreen::actualTempLabelCb(lv_obj_t *obj, lv_event_t event){
 	}
 }
 
-void MainScreen::changeModeIcon(SchedulerApp::scheduler_mode_t mode) {
+void MainScreen::setModeIcon(SchedulerApp::scheduler_mode_t mode) {
 	switch (mode) {
 	case SchedulerApp::scheduler_mode_t::ModeOff:
 	     lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);

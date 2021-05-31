@@ -23,29 +23,23 @@
 extern "C" {
 #endif
 
-#define ESP_WIFI_SSID      		"OSH_2GHz"		// Please insert your SSID
-#define ESP_WIFI_PASS      		"9b2fb11587358d3"		// Please insert your password
+#define ESP_WIFI_SSID   "OSH_2GHz"
+#define ESP_WIFI_PASS	"9b2fb11587358d3"
 
-void app_main(void)
-{
+void app_main(void) {
     vTaskDelay(pdMS_TO_TICKS(100));
 
     Model::preinit();
     Model::init();
 
     static CredentialsDesc cred(ESP_WIFI_SSID, ESP_WIFI_PASS, WIFI_AUTH_WPA2_PSK);
-
     WifiManager::getInstance()->init();
     WifiManager::getInstance()->enable();
     WifiManager::getInstance()->connect(cred);
-
-//    CoAPApp::CoAPAppMain();
-
-//    static SpiFfsStorrage storrage = SpiFfsStorrage();
-//    static SchedulerApp schedulerUl = SchedulerApp();
-//    static GuiApp guiApp = GuiApp(&schedulerUl);
-
     static MqttApp mqtt = MqttApp();
+
+    static SchedulerApp schedulerUl = SchedulerApp();
+    static GuiApp guiApp = GuiApp(&schedulerUl);
 }
 
 

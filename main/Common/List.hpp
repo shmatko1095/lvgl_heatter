@@ -22,7 +22,7 @@ public:
   {
   public:
 	Item():next(0){}
-//	Item(Item&);
+//	Item(Item&):next(0){};
   private:
     void operator = (Item&);
     friend class List;

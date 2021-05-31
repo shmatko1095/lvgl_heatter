@@ -12,10 +12,7 @@
 #include <string.h>
 
 static void printScanResults(AccessPointDesc* data, size_t &len);
-static void WifiEventHandler(void* arg, esp_event_base_t event_base,
-                                int32_t event_id, void* event_data);
-static void IpEventHandler(void* arg, esp_event_base_t event_base,
-                                int32_t event_id, void* event_data);
+Mutex WifiManager::mMtx = Mutex();
 
 WifiManager::WifiManager() {
 	connected = false;
@@ -32,29 +29,43 @@ void WifiManager::init(){
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
 	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID,    &WifiEventHandler, NULL));
-    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT,   IP_EVENT_STA_GOT_IP, &IpEventHandler, NULL));
+	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
+			&WifiManager::wifiEventHandler, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP,
+    		&WifiManager::ipEventHandler, NULL));
 
-	ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));//WIFI_STORAGE_FLASH
+	ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
 }
 
 esp_err_t WifiManager::enable(){
+	mMtx.lock();
 	Assert(!started);
 	esp_err_t result = esp_wifi_start();
-	started = result == ESP_OK;
 	ESP_ERROR_CHECK(result);
+	if (result == ESP_OK) {
+		started = true;
+	} else {
+		printf("WifiManager::enable result: %s", esp_err_to_name(result));
+		mMtx.unlock();
+	}
 	return result;
 }
 
 esp_err_t WifiManager::disable(){
+	mMtx.lock();
 	esp_err_t result = esp_wifi_stop();
-	started = result == ESP_OK ? !started : started;
 	ESP_ERROR_CHECK(result);
+	if (result == ESP_OK) {
+		started = false;
+	} else {
+		printf("WifiManager::disable result: %s", esp_err_to_name(result));
+		mMtx.unlock();
+	}
 	return result;
 }
 
-esp_err_t WifiManager::startScan(bool block){
+esp_err_t WifiManager::startScan(){
 	static const wifi_active_scan_time_t activaScanTime = {
 			.min = 50,
 			.max = 1000,
@@ -75,11 +86,14 @@ esp_err_t WifiManager::startScan(bool block){
 	};
 
 	mMtx.lock();
-	esp_err_t result = esp_wifi_scan_start(&scanConf, block);
-	if (result != ESP_OK) {
+	esp_err_t result = esp_wifi_scan_start(&scanConf, false);
+	ESP_ERROR_CHECK(result);
+	if (result == ESP_OK) {
+		started = false;
+	} else {
 		printf("WifiManager::startScan result: %s", esp_err_to_name(result));
+		mMtx.unlock();
 	}
-	mMtx.unlock();
 	return result;
 }
 
@@ -99,9 +113,12 @@ void WifiManager::connect(CredentialsDesc& cred) {
 	sWifiConfig.sta = staConfig;
 
 	esp_wifi_disconnect();
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &sWifiConfig));
-    esp_wifi_connect();
-    mMtx.unlock();
+	esp_wifi_set_config(WIFI_IF_STA, &sWifiConfig);
+	esp_err_t result = esp_wifi_connect();
+    if (result != ESP_OK) {
+    	printf("WifiManager::connect result: %s", esp_err_to_name(result));
+    	mMtx.unlock();
+    }
 }
 
 size_t WifiManager::getWirelessListSize(){
@@ -124,8 +141,9 @@ size_t WifiManager::getWirelessList(AccessPointDesc* data, size_t len) {
 	return len;
 }
 
-static void WifiEventHandler(void* arg, esp_event_base_t event_base,
+void WifiManager::wifiEventHandler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data) {
+	mMtx.unlock();
 	switch (event_id) {
 	case SYSTEM_EVENT_WIFI_READY:
 		EventController::pushEvent(IEventReceiver::WifiReady, nullptr);
@@ -151,7 +169,7 @@ static void WifiEventHandler(void* arg, esp_event_base_t event_base,
 	}
 }
 
-static void IpEventHandler(void* arg, esp_event_base_t event_base,
+void WifiManager::ipEventHandler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data) {
 	if (event_id == IP_EVENT_STA_GOT_IP) {
 		EventController::pushEvent(IEventReceiver::WifiGotIp, event_data);

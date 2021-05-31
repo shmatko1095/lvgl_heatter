@@ -26,7 +26,7 @@ public:
 
 	esp_err_t disable();
 
-	esp_err_t startScan(bool block = false);
+	esp_err_t startScan();
 
 	void connect(CredentialsDesc& cred);
 
@@ -45,7 +45,12 @@ public:
 private:
 	WifiManager();
 
-	Mutex mMtx;
+	static void wifiEventHandler(void* arg, esp_event_base_t event_base,
+	                                int32_t event_id, void* event_data);
+	static void ipEventHandler(void* arg, esp_event_base_t event_base,
+	                                int32_t event_id, void* event_data);
+
+	static Mutex mMtx;
 	bool started;
 	bool connected;
 };

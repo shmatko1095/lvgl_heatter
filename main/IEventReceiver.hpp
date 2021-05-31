@@ -21,6 +21,15 @@ public:
 		WifiDisconnected,
 		WifiGotIp,
 		WifiLostIp,
+
+		MqttConnected,
+        MqttDisconnected,
+        MqttSubscribes,
+        MqttUnsubscribes,
+        MqttPublished,
+        MqttData,
+        MqttError,
+
 		EventAmount
 	};
 

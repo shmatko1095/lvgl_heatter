@@ -49,12 +49,18 @@ public:
 
 	static void changeScreen(uint8_t currentScreenId);
 
-	static void changeMode(SchedulerApp::scheduler_mode_t mode);
-
-	static void incMode();
-
 	static SchedulerApp::scheduler_mode_t getMode() {
-		return mCurrentMode;
+		return mSchedulerPtr->getMode();
+	}
+
+	static void setMode(SchedulerApp::scheduler_mode_t mode) {
+		mSchedulerPtr->setMode(mode);
+	}
+
+	static void incMode() {
+		SchedulerApp::scheduler_mode_t currentMode = getMode();
+		SchedulerApp::scheduler_mode_t newMode = SchedulerApp::incMode(currentMode);
+		setMode(newMode);
 	}
 
 private:
@@ -63,7 +69,6 @@ private:
 	static SettingsScreen mSettingsScreen;
 	static BaseScreen* mCurrentScreen;
 
-	static SchedulerApp::scheduler_mode_t mCurrentMode;
 	static SchedulerApp* mSchedulerPtr;
 };
 #endif /* MAIN_GUIAPP_GUIAPP_H_ */

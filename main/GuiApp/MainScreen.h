@@ -35,7 +35,7 @@ public:
     	return mBase;
     }
 
-    static void changeModeIcon(SchedulerApp::scheduler_mode_t mode);
+    static void setModeIcon(SchedulerApp::scheduler_mode_t mode);
 
 private:
     lv_obj_t* createLinemeterSetpoint(lv_obj_t *par);
