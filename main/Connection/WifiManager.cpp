@@ -12,6 +12,7 @@
 #include <string.h>
 
 static void printScanResults(AccessPointDesc* data, size_t &len);
+wifi_config_t WifiManager::mWifiConfig;
 Mutex WifiManager::mMtx = Mutex();
 
 WifiManager::WifiManager() {
@@ -97,28 +98,38 @@ esp_err_t WifiManager::startScan(){
 	return result;
 }
 
-void WifiManager::connect(CredentialsDesc& cred) {
+
+void WifiManager::disconnect() {
 	mMtx.lock();
-    wifi_sta_config_t staConfig;
-    strcpy((char*)staConfig.ssid, cred.getSsid());
-    strcpy((char*)staConfig.password, cred.getPassword());
-    staConfig.threshold.authmode = cred.getAuth();
+	esp_err_t result = esp_wifi_disconnect();
+    if (result != ESP_OK) {
+    	printf("WifiManager::connect result: %s", esp_err_to_name(result));
+    	mMtx.unlock();
+    }
+}
 
-    wifi_pmf_config_t pmfConfig;
-    pmfConfig.capable = true;
-	pmfConfig.required = false;
-	staConfig.pmf_cfg = pmfConfig;
-
-	wifi_config_t sWifiConfig;
-	sWifiConfig.sta = staConfig;
-
-	esp_wifi_disconnect();
-	esp_wifi_set_config(WIFI_IF_STA, &sWifiConfig);
+void WifiManager::connect() {
+	mMtx.lock();
+	esp_wifi_set_config(WIFI_IF_STA, &mWifiConfig);
 	esp_err_t result = esp_wifi_connect();
     if (result != ESP_OK) {
     	printf("WifiManager::connect result: %s", esp_err_to_name(result));
     	mMtx.unlock();
     }
+}
+
+void WifiManager::setConfig(CredentialsDesc& cred) {
+    static wifi_sta_config_t staConfig;
+    strcpy((char*)staConfig.ssid, cred.getSsid());
+    strcpy((char*)staConfig.password, cred.getPassword());
+    staConfig.threshold.authmode = cred.getAuth();
+
+    static wifi_pmf_config_t pmfConfig;
+    pmfConfig.capable = true;
+	pmfConfig.required = false;
+	staConfig.pmf_cfg = pmfConfig;
+
+	mWifiConfig.sta = staConfig;
 }
 
 size_t WifiManager::getWirelessListSize(){
@@ -162,7 +173,7 @@ void WifiManager::wifiEventHandler(void* arg, esp_event_base_t event_base,
 		break;
 	case SYSTEM_EVENT_STA_DISCONNECTED:
 		EventController::pushEvent(IEventReceiver::WifiDisconnected, nullptr);
-		esp_wifi_connect();
+		WifiManager::getInstance()->connect();
 		break;
 	default:
 		break;

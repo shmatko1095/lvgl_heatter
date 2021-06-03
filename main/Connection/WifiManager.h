@@ -28,7 +28,11 @@ public:
 
 	esp_err_t startScan();
 
-	void connect(CredentialsDesc& cred);
+	void connect();
+
+	void disconnect();
+
+	void setConfig(CredentialsDesc& cred);
 
 	size_t getWirelessListSize();
 
@@ -50,6 +54,7 @@ private:
 	static void ipEventHandler(void* arg, esp_event_base_t event_base,
 	                                int32_t event_id, void* event_data);
 
+	static wifi_config_t mWifiConfig;
 	static Mutex mMtx;
 	bool started;
 	bool connected;
