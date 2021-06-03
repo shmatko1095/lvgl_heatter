@@ -8,7 +8,7 @@
 #ifndef GUIAPP_HEATTER_H_
 #define GUIAPP_HEATTER_H_
 
-#include "Types.h"
+#include "Common/Types.h"
 
 class HeatterApp {
 public:

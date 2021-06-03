@@ -11,16 +11,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Common/Types.h"
-#include "SpiFfsStorrage.h"
+#include "Connection/MqttEventReceiver.hpp"
+#include "Core/BaseTask.hpp"
 #include "Core/Mutex.hpp"
 #include "Core/Queue.hpp"
-//#include "Connection/MqttApp.h"
-#include "Connection/IMqttEventReceiver.hpp"
 
 #define KEY_DAILY "KEY_DAILY"
 #define KEY_WEEKLY "KEY_WEEKLY"
 
-class SchedulerApp : public StaticBaseTask<4096*2>, public IMqttEventReceiver {
+class SchedulerApp : public StaticBaseTask<4096*2>, public MqttEventReceiver {
 public:
 	enum {
 		SetpointUnknown = -1,

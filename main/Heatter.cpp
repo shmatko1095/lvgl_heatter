@@ -7,7 +7,7 @@
 
 #include "Heatter.h"
 
-Heatter::Heatter() {
+HeatterApp::HeatterApp() {
 	// TODO Auto-generated constructor stub
 
 }

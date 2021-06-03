@@ -1,5 +1,5 @@
 /*
- * IMqttEventReceiver.hpp
+ * MqttEventReceiver.hpp
  *
  *  Created on: May 28, 2021
  *      Author: f73377
@@ -11,7 +11,7 @@
 #include "../Common/List.hpp"
 #include <string.h>
 
-class IMqttEventReceiver {
+class MqttEventReceiver {
 public:
 
 	struct MqttTopicDesc {
@@ -20,7 +20,7 @@ public:
 		List::Item item;
 	};
 
-	IMqttEventReceiver() {};
+	MqttEventReceiver() {};
 
 	virtual void onReceive(char* topic, size_t topicLen, char* data, size_t dataLen) = 0;
 
@@ -52,7 +52,7 @@ public:
 	List::Item mItem;
 
 protected:
-	virtual ~IMqttEventReceiver(){}
+	virtual ~MqttEventReceiver(){}
 
 	List mTopicList;
 };

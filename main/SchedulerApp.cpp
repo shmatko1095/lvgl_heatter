@@ -34,10 +34,10 @@ enum {
 static uint8_t setpointBlobBfr[1024];
 static const size_t setpointSize = sizeof(SchedulerApp::scheduler_setpoint_t);
 
-static IMqttEventReceiver::MqttTopicDesc Mode = {
+static MqttEventReceiver::MqttTopicDesc Mode = {
 		.qos = 1, .topic = "/Mode",
 	};
-static IMqttEventReceiver::MqttTopicDesc Setpoint = {
+static MqttEventReceiver::MqttTopicDesc Setpoint = {
 		.qos = 1, .topic = "/Setpoint",
 	};
 
@@ -53,8 +53,8 @@ static Queue setpointQueue = Queue(queueSetpointStorageArea, queueLen, sizeof(in
 
 SchedulerApp::SchedulerApp() {
 	create("SchedulerApp", 0, 1);
-	addTopic((IMqttEventReceiver::MqttTopicDesc&)Mode);
-	addTopic((IMqttEventReceiver::MqttTopicDesc&)Setpoint);
+	addTopic((MqttEventReceiver::MqttTopicDesc&)Mode);
+	addTopic((MqttEventReceiver::MqttTopicDesc&)Setpoint);
 	MqttEventController::registerReceiver(*this);
 
 	mModifiedDay = 0;

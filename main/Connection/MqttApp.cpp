@@ -64,11 +64,11 @@ void MqttApp::onReceive(IEventReceiver::EventId event, void* params) {
 void MqttApp::subscribeHandlers() {
 	List::Itterator handlerItt = MqttEventController::getHandlers().getItterator();
 	while(handlerItt) {
-	   	IMqttEventReceiver* receiver = &containerOf(*(handlerItt++), &IMqttEventReceiver::mItem);
+	   	MqttEventReceiver* receiver = &containerOf(*(handlerItt++), &MqttEventReceiver::mItem);
 	   	List::Itterator topicItt = receiver->getTopicList().getItterator();
 	   	while(topicItt) {
-	   		IMqttEventReceiver::MqttTopicDesc* desc =
-	   				&containerOf(*(topicItt++), &IMqttEventReceiver::MqttTopicDesc::item);
+	   		MqttEventReceiver::MqttTopicDesc* desc =
+	   				&containerOf(*(topicItt++), &MqttEventReceiver::MqttTopicDesc::item);
 	   		esp_mqtt_client_subscribe(mClient, desc->topic, desc->qos);
 	   	}
 	}

@@ -14,8 +14,6 @@
 #include "Connection/MqttApp.h"
 #include "SchedulerApp.h"
 #include "GuiApp/GuiApp.h"
-#include "TaskExample.hpp"
-#include "SpiFfsStorrage.h"
 #include "EventController.h"
 #include "Model.hpp"
 
@@ -35,7 +33,8 @@ void app_main(void) {
     static CredentialsDesc cred(ESP_WIFI_SSID, ESP_WIFI_PASS, WIFI_AUTH_WPA2_PSK);
     WifiManager::getInstance()->init();
     WifiManager::getInstance()->enable();
-    WifiManager::getInstance()->connect(cred);
+    WifiManager::getInstance()->setConfig(cred);
+    WifiManager::getInstance()->connect();
     static MqttApp mqtt = MqttApp();
 
     static SchedulerApp schedulerUl = SchedulerApp();

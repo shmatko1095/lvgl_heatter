@@ -8,15 +8,15 @@
 #ifndef MQTTEVENTCONTROLLER_H_
 #define MQTTEVENTCONTROLLER_H_
 
-#include "IMqttEventReceiver.hpp"
 #include "../Common/Pair.hpp"
 #include "../Common/List.hpp"
 #include "../Common/Types.h"
 #include "../Common/Map.hpp"
+#include "MqttEventReceiver.hpp"
 
 class MqttEventController {
 public:
-	static void registerReceiver(IMqttEventReceiver &receiver) {
+	static void registerReceiver(MqttEventReceiver &receiver) {
 		MqttEventController &controller = MqttEventController::getInstance();
 		controller.handlers.addLast(receiver.mItem);
 	}
@@ -25,7 +25,7 @@ public:
 		MqttEventController &controller = MqttEventController::getInstance();
 		List::Itterator itt = controller.handlers.getItterator();
 		while(itt) {
-			IMqttEventReceiver* receiver = &containerOf(*(itt++), &IMqttEventReceiver::mItem);
+			MqttEventReceiver* receiver = &containerOf(*(itt++), &MqttEventReceiver::mItem);
 			if (receiver->isSubscribed(topic, topicLen)) {
 				receiver->onReceive(topic, topicLen, data, dataLen);
 			}
