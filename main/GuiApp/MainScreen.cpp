@@ -11,7 +11,7 @@
 #include "TempSetpointContainer.h"
 
 LV_IMG_DECLARE(calendar);
-LV_IMG_DECLARE(clock);
+LV_IMG_DECLARE(clockicon);
 LV_IMG_DECLARE(shutdown);
 LV_IMG_DECLARE(snowflake);
 
@@ -79,7 +79,7 @@ void MainScreen::setModeIcon(SchedulerApp::scheduler_mode_t mode) {
 		break;
 	case SchedulerApp::scheduler_mode_t::ModeDaily:
 		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-		lv_img_set_src(mModeIcon, &clock);
+		lv_img_set_src(mModeIcon, &clockicon);
 		break;
 	case SchedulerApp::scheduler_mode_t::ModeWeekly:
 		lv_obj_set_style_local_image_recolor(mModeIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);

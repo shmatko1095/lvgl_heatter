@@ -34,12 +34,8 @@ enum {
 static uint8_t setpointBlobBfr[1024];
 static const size_t setpointSize = sizeof(SchedulerApp::scheduler_setpoint_t);
 
-static MqttEventReceiver::MqttTopicDesc Mode = {
-		.qos = 1, .topic = "/Mode",
-	};
-static MqttEventReceiver::MqttTopicDesc Setpoint = {
-		.qos = 1, .topic = "/Setpoint",
-	};
+MqttEventReceiver::MqttTopicDesc SchedulerApp::mModeDesc("/ModeIn", "/ModeOut", 0);
+MqttEventReceiver::MqttTopicDesc SchedulerApp::mSetpointDesc("/SetpointIn", "/SetpointOut", 0);
 
 static uint8_t queueModeStorageArea[queueLen * sizeof(char)];
 static uint8_t dailyQueueStorageArea[queueLen * setpointSize];
@@ -53,8 +49,8 @@ static Queue setpointQueue = Queue(queueSetpointStorageArea, queueLen, sizeof(in
 
 SchedulerApp::SchedulerApp() {
 	create("SchedulerApp", 0, 1);
-	addTopic((MqttEventReceiver::MqttTopicDesc&)Mode);
-	addTopic((MqttEventReceiver::MqttTopicDesc&)Setpoint);
+	addTopic(mModeDesc);
+	addTopic(mSetpointDesc);
 	MqttEventController::registerReceiver(*this);
 
 	mModifiedDay = 0;
@@ -85,9 +81,9 @@ void SchedulerApp::run() {
 }
 
 void SchedulerApp::onReceive(char* topic, size_t topicLen, char* data, size_t dataLen) {
-	if (memcmp(topic, Mode.topic, topicLen) == 0) {
+	if (memcmp(topic, mModeDesc.getTopicIn(), topicLen) == 0) {
 		mqttModeHandler(data, dataLen);
-	} else if (memcmp(topic, Setpoint.topic, topicLen) == 0){
+	} else if (memcmp(topic, mSetpointDesc.getTopicIn(), topicLen) == 0){
 		mqttSetpointHandler(data, dataLen);
 	}
 }
@@ -273,10 +269,8 @@ SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForCurrentMode() {
 	case SchedulerApp::ModeWeekly:
 		result = getSetpointFromFileUnsafe(getWeeklyKey(timeinfo.tm_wday), timeinfo.tm_hour, timeinfo.tm_min);
 		break;
-	case SchedulerApp::ModeDeicing: {
-		int16_t val = getDeicingSetpointFromFile();
-		result = {-1, -1, -1, val};
-	}
+	case SchedulerApp::ModeDeicing:
+		result = {-1, -1, -1, getDeicingSetpointFromFile()};
 		break;
 	case SchedulerApp::ModeManual:
 		result = getManualSetpointFromFile();
@@ -293,5 +287,6 @@ void SchedulerApp::updateSetpoint(){
 			|| currentSetpoint.hour != mModifiedHours
 			|| currentSetpoint.min != mModifiedMin) {
 		mSetpoint = currentSetpoint;
+		MqttApp::publishMessage(mSetpointDesc, mSetpoint.value);
 	}
 }

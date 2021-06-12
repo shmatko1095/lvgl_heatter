@@ -64,7 +64,6 @@ public:
                                &xTaskBuffer,
 							   core);
 	#endif
-    vTaskSetThreadLocalStoragePointer(handle, 0, this);
     return (handle != 0);
   }
 
@@ -78,15 +77,7 @@ public:
     return eTaskGetState(handle) != eTaskState::eDeleted;
   }
 
-  /**@brief Returns reference to currently active running task
-   * @return reference on current task
-   */
-  static BaseTask &getCurrentTask() {
-    return *(BaseTask *) pvTaskGetThreadLocalStoragePointer(NULL, 0);
-  }
-
 private:
-//  friend class SYSWDT;
   static void taskCode(void *pvParameters) {
     static_cast<BaseTask *>(pvParameters)->run();
     vTaskDelete(NULL);
@@ -94,7 +85,6 @@ private:
 
   TaskHandle_t handle = nullptr;
   StaticTask_t xTaskBuffer;
-//  SingleList::Item item;
   uint32_t wdtInterval;
   uint8_t id;
 };

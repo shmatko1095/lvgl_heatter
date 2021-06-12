@@ -124,7 +124,7 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_CLOCK uin
 #endif
 };
 
-const lv_img_dsc_t clock = {
+const lv_img_dsc_t clockicon = {
   .header.always_zero = 0,
   .header.w = 24,
   .header.h = 24,

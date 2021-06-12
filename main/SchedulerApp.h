@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Common/Types.h"
+#include "Connection/MqttApp.h"
 #include "Connection/MqttEventReceiver.hpp"
 #include "Core/BaseTask.hpp"
 #include "Core/Mutex.hpp"
@@ -122,12 +123,7 @@ private:
 		while (mModeQueue->getCount()){
 			mModeQueue->receive(&mode, 0);
 			setModeUnsafe((scheduler_mode_t)mode);
-
-//			static char data[3];
-//			int len = sprintf(data, "%d", mode);
-//			sendMessage("/Mode", data, len);
-//			MqttApp::publishMessage("/Mode", data, len, mQos, 0);
-
+			MqttApp::publishMessage(mModeDesc, mode);
 		}
 		mMtx.unlock();
 	}
@@ -191,6 +187,9 @@ private:
 	Queue* mWeeklyQueue;
 	Queue* mSetpointQueue;
 	Mutex mMtx;
+
+	static MqttEventReceiver::MqttTopicDesc mModeDesc;
+	static MqttEventReceiver::MqttTopicDesc mSetpointDesc;
 };
 
 #endif /* SCHEDULERAPP_H_ */

@@ -15,9 +15,24 @@ class MqttEventReceiver {
 public:
 
 	struct MqttTopicDesc {
-		int qos;
-		const char* topic;
-		List::Item item;
+	public:
+		MqttTopicDesc(const char* topicIn, const char* topicOut, int qos) :
+			mTopicIn(topicIn), mTopicOut(topicOut), mQos(qos){};
+		const char* getTopicIn() {
+			return mTopicIn;
+		}
+		const char* getTopicOut(){
+			return mTopicOut;
+		}
+		int getQos() {
+			return mQos;
+		}
+
+		List::Item mItem;
+	private:
+		const char* mTopicIn;
+		const char* mTopicOut;
+		int mQos;
 	};
 
 	MqttEventReceiver() {};
@@ -25,7 +40,7 @@ public:
 	virtual void onReceive(char* topic, size_t topicLen, char* data, size_t dataLen) = 0;
 
 	void addTopic(MqttTopicDesc& desc) {
-		mTopicList.addLast(desc.item);
+		mTopicList.addLast(desc.mItem);
 	}
 
 	List getTopicList() {
@@ -36,18 +51,14 @@ public:
 		bool result = false;
 		List::Itterator itt = mTopicList.getItterator();
 		while(itt) {
-			MqttTopicDesc* desc = &containerOf(*(itt++), &MqttTopicDesc::item);
-			if (memcmp(desc->topic, topic, len) == 0) {
+			MqttTopicDesc* desc = &containerOf(*(itt++), &MqttTopicDesc::mItem);
+			if (memcmp(desc->getTopicIn(), topic, len) == 0) {
 				result = true;
 				break;
 			}
 		}
 		return result;
 	}
-
-//	int sendMessage(const char *topic, const char *data, int len, int retain = 0) {
-//		return MqttApp::publishMessage(topic, data, len, mQos, retain);
-//	}
 
 	List::Item mItem;
 

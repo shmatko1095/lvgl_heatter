@@ -18,7 +18,7 @@
 #ifndef MAIN_GUIAPP_GUIAPP_H_
 #define MAIN_GUIAPP_GUIAPP_H_
 
-class GuiApp : public StaticBaseTask<4096*2> {
+class GuiApp : public StaticBaseTask<4096*3> {
 public:
 	enum {
 		InvalidValue = -1

@@ -10,7 +10,7 @@
 
 #include "../Core/BaseTask.hpp"
 
-class BleApp : public StaticBaseTask<4096*2> {
+class BleApp : public StaticBaseTask<1024> {
 public:
 	BleApp();
 

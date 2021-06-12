@@ -10,7 +10,6 @@
  */
 
 #include "Connection/WifiManager.h"
-#include "Connection/CoAPApp.h"
 #include "Connection/MqttApp.h"
 #include "SchedulerApp.h"
 #include "GuiApp/GuiApp.h"

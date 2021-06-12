@@ -10,7 +10,9 @@
 #include "../EventController.h"
 #include "MqttEventController.h"
 #include "esp_log.h"
+#include "esp_task_wdt.h"
 
+bool MqttApp::mIsConnected = false;
 esp_mqtt_client_handle_t MqttApp::mClient;
 
 static const char *TAG = "MqttApp";
@@ -19,31 +21,29 @@ static const char *BROKER_URL = "mqtt://192.168.88.239:1883";
 static void log_error_if_nonzero(const char *message, int error_code);
 
 MqttApp::MqttApp() {
-	create("MqttApp", 0, 1);
+//	create("MqttApp", 0, 1);
 	EventController::registerReceiver(*this);
 }
 
 static bool isReady = false;
 
-void MqttApp::run() {
-	while (1) {
-		vTaskDelay(pdMS_TO_TICKS(1000));
-		if(isReady == true){
-			isReady = false;
-			start();
-		}
-	}
-}
+//void MqttApp::run() {
+//	while (1) {
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		if(isReady == true){
+//		}
+//	}
+//}
 
 void MqttApp::start() {
-	mMtx.lock();
+//	mMtx.lock();
     static esp_mqtt_client_config_t config;
     config.uri = BROKER_URL;
     config.client_id = CLIENT_ID;
 	config.event_handle = MqttApp::eventHandler;
     mClient = esp_mqtt_client_init(&config);
     esp_mqtt_client_start(mClient);
-    mMtx.unlock();
+//    mMtx.unlock();
 }
 
 void MqttApp::stop() {
@@ -52,12 +52,16 @@ void MqttApp::stop() {
 
 int MqttApp::publishMessage(const char *topic,
 		const char *data, int len, int qos, int retain){
-	return esp_mqtt_client_publish(mClient, topic, data, len, qos, retain);
+	int result = -1;
+	if (mIsConnected) {
+		result = esp_mqtt_client_publish(mClient, topic, data, len, qos, retain);
+	}
+	return result;
 }
 
 void MqttApp::onReceive(IEventReceiver::EventId event, void* params) {
 	if (event == WifiGotIp) {
-		isReady = true;
+		start();
 	}
 }
 
@@ -68,8 +72,8 @@ void MqttApp::subscribeHandlers() {
 	   	List::Itterator topicItt = receiver->getTopicList().getItterator();
 	   	while(topicItt) {
 	   		MqttEventReceiver::MqttTopicDesc* desc =
-	   				&containerOf(*(topicItt++), &MqttEventReceiver::MqttTopicDesc::item);
-	   		esp_mqtt_client_subscribe(mClient, desc->topic, desc->qos);
+	   				&containerOf(*(topicItt++), &MqttEventReceiver::MqttTopicDesc::mItem);
+	   		esp_mqtt_client_subscribe(mClient, desc->getTopicIn(), desc->getQos());
 	   	}
 	}
 }
@@ -79,11 +83,13 @@ esp_err_t MqttApp::eventHandler(esp_mqtt_event_handle_t event) {
     int msg_id;
     switch (event->event_id) {
     case MQTT_EVENT_CONNECTED:
+    	mIsConnected = true;
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
         EventController::pushEvent(EventId::MqttConnected, &event);
         subscribeHandlers();
         break;
     case MQTT_EVENT_DISCONNECTED:
+    	mIsConnected = false;
     	EventController::pushEvent(EventId::MqttDisconnected, &event);
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
         break;
@@ -93,6 +99,7 @@ esp_err_t MqttApp::eventHandler(esp_mqtt_event_handle_t event) {
         ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
         msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
         ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+        isReady = true;
         break;
     case MQTT_EVENT_UNSUBSCRIBED:
     	EventController::pushEvent(EventId::MqttUnsubscribes, &event);

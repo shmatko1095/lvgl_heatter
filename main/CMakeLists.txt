@@ -24,7 +24,8 @@ SRCS main.cpp
 	GuiApp/SettingsScreen.cpp
 	GuiApp/WifiSettingsScreen.cpp
 	GuiApp/TempSetpointContainer.cpp
-	GuiApp/res/clock.c	
+	
+	GuiApp/res/clockicon.c	
 	GuiApp/res/calendar.c		
 	GuiApp/res/shutdown.c	
 	GuiApp/res/snowflake.c
