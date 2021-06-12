@@ -151,6 +151,7 @@ private:
 		mMtx.lock();
 		while (mSetpointQueue->receive(&value, 0)){
 			setSetpointUnsafe(value);
+			MqttApp::publishMessage(mSetpointDesc, mSetpoint.value);
 		}
 		mMtx.unlock();
 	}
@@ -169,9 +170,19 @@ private:
 
 	scheduler_mode_t getModeFromFile();
 
-	scheduler_setpoint_t getSetpointForCurrentMode();
+	scheduler_setpoint_t getSetpointForTimeAndMode(tm timeinfo, scheduler_mode_t mode);
+
+	scheduler_setpoint_t getSetpointForCurrentTimeAndMode();
 
 	void updateSetpoint();
+
+	void updateMqttSetpoint() {
+		static int16_t oldSetpoint = 0;
+		if (oldSetpoint != mSetpoint.value) {
+			oldSetpoint = mSetpoint.value;
+			MqttApp::publishMessage(mSetpointDesc, mSetpoint.value);
+		}
+	}
 
 	static char* getWeeklyKey(uint8_t day) {
 		static char key[19];
@@ -179,7 +190,7 @@ private:
 		return key;
 	}
 
-	uint8_t mModifiedDay, mModifiedHours, mModifiedMin;
+	int16_t mModifiedDay, mModifiedHours, mModifiedMin;
 	scheduler_setpoint_t mSetpoint;
 	scheduler_mode_t mMode;
 	Queue* mModeQueue;

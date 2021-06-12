@@ -75,6 +75,7 @@ void SchedulerApp::run() {
 		handleWeeklyQueue();
 		handleSetpointQueue();
 		updateSetpoint();
+		updateMqttSetpoint();
 
 		vTaskDelay(pdMS_TO_TICKS(500));
 	}
@@ -101,7 +102,7 @@ void SchedulerApp::setModeUnsafe(scheduler_mode_t mode) {
 
 void SchedulerApp::setSetpointUnsafe(int16_t value) {
 	if (mSetpoint.value != value) {
-		scheduler_setpoint_t setpoint = getSetpointForCurrentMode();
+		scheduler_setpoint_t setpoint = getSetpointForCurrentTimeAndMode();
 		setpoint.value = value;
 
 		nvs_handle_t handle;
@@ -245,20 +246,14 @@ SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointFromFileUnsafe
 	return result;
 }
 
-SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForCurrentMode() {
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForTimeAndMode(tm timeinfo, scheduler_mode_t mode) {
 	scheduler_setpoint_t result = {-1, -1, -1, -1};
-	time_t now;
-	time(&now);
-	struct tm timeinfo;
-	localtime_r(&now, &timeinfo);
 
-//	char strftime_buf[64];
-//	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-//	printf("%s\n", strftime_buf);
-
+	/**Tmp for debug and test*/
 	timeinfo.tm_hour = 0;
 	timeinfo.tm_min = timeinfo.tm_sec;
-	scheduler_mode_t mode = getMode();
+	/***/
+
 	switch (mode) {
 	case SchedulerApp::ModeOff:
 		result = {-1, -1, -1, 0};
@@ -281,12 +276,21 @@ SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForCurrentMode() {
 	return result;
 }
 
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForCurrentTimeAndMode(){
+	time_t now;
+	time(&now);
+	struct tm timeinfo;
+	localtime_r(&now, &timeinfo);
+	return getSetpointForTimeAndMode(timeinfo, getMode());
+}
+
 void SchedulerApp::updateSetpoint(){
-	scheduler_setpoint_t currentSetpoint = getSetpointForCurrentMode();
+	scheduler_setpoint_t currentSetpoint = getSetpointForCurrentTimeAndMode();
 	if (currentSetpoint.day != mModifiedDay
 			|| currentSetpoint.hour != mModifiedHours
 			|| currentSetpoint.min != mModifiedMin) {
 		mSetpoint = currentSetpoint;
-		MqttApp::publishMessage(mSetpointDesc, mSetpoint.value);
 	}
 }
+
+
