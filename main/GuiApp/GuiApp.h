@@ -37,12 +37,12 @@ public:
 
 	void run() override;
 
-	static uint16_t getSetpoint(){
-		return mSchedulerPtr->getSetpoint();
+	static int16_t getSetpoint(){
+		return mSchedulerPtr != nullptr ? mSchedulerPtr->getSetpoint() : -1;
 	}
 
-	static uint16_t getActual(){
-		return mSchedulerPtr->getSetpoint();
+	static int16_t getActual(){
+		return mSchedulerPtr != nullptr ? mSchedulerPtr->getSetpoint() : -1;
 	}
 
 	static void changeSetpoint(uint16_t setpoint, bool goToManual);
@@ -50,11 +50,13 @@ public:
 	static void changeScreen(uint8_t currentScreenId);
 
 	static SchedulerApp::scheduler_mode_t getMode() {
-		return mSchedulerPtr->getMode();
+		return mSchedulerPtr != nullptr ? mSchedulerPtr->getMode() : SchedulerApp::scheduler_mode_t::ModeUnknown;
 	}
 
 	static void setMode(SchedulerApp::scheduler_mode_t mode) {
-		mSchedulerPtr->setMode(mode);
+		if (mSchedulerPtr != nullptr) {
+			mSchedulerPtr->setMode(mode);
+		}
 	}
 
 	static void incMode() {

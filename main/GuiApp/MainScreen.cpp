@@ -43,10 +43,10 @@ void MainScreen::init(){
 }
 
 void MainScreen::run(){
-	uint16_t actual = GuiApp::getActual();
+	int16_t actual = GuiApp::getActual();
 	lv_linemeter_set_value(mLinemeterActual, GuiApp::getActual());
 	lv_linemeter_set_value(mLinemeterSetpoint, GuiApp::getSetpoint());
-	if (actual == (uint16_t)GuiApp::InvalidValue) {
+	if (actual == GuiApp::InvalidValue) {
 		lv_label_set_text_fmt(mActualTempLabel, "--°C");
 	} else {
 		lv_label_set_text_fmt(mActualTempLabel, "%d.%d°C", actual/10, actual%10);
