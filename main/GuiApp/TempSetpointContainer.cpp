@@ -11,7 +11,7 @@
 #include <string>
 
 lv_obj_t* TempSetpointContainer::mContainerBase = nullptr;
-static uint16_t rollerSetpoint = 0;
+static int16_t rollerSetpoint = 0;
 
 static const char *tempRollerOptions =
 		" 10\n10.5\n 11\n11.5\n 12\n12.5\n 13\n13.5\n 14\n14.5\n 15\n15.5\n 16\n16.5\n 17\n17.5\n 18\n18.5\n 19\n19.5\n 20\n20.5\n 21\n21.5\n 22\n22.5\n 23\n23.5\n 24\n24.5\n 25\n25.5\n 26\n26.5\n 27\n27.5\n 28\n28.5\n 29\n29.5\n 30\n30.5\n 31\n31.5\n 32\n32.5\n 33\n33.5\n 34\n34.5\n 35\n35.5\n 36\n36.5\n 37\n37.5\n 38\n38.5\n 39\n39.5\n40";
@@ -38,6 +38,8 @@ void TempSetpointContainer::create(lv_obj_t* par) {
 	createButtonKeepCurrent(mContainerBase);
 	createButtonGoToManual(mContainerBase);
 	createCancelButton(mContainerBase, cancelBtnHandler);
+
+	rollerSetpoint = GuiApp::getSetpoint();
 }
 
 static void rollerHandler(lv_obj_t* obj, lv_event_t event) {
@@ -174,7 +176,6 @@ static lv_obj_t* openRoller(lv_obj_t* par) {
 		optNum++;
 	}
 	lv_roller_set_selected(roller, optNum, LV_ANIM_OFF);
-
 
     return roller;
 }

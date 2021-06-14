@@ -28,7 +28,7 @@ enum {
 
 enum {
 	dailyRowLen = 11,
-	queueLen = 60
+	queueLen = 10
 };
 
 static uint8_t setpointBlobBfr[1024];
@@ -36,16 +36,19 @@ static const size_t setpointSize = sizeof(SchedulerApp::scheduler_setpoint_t);
 
 MqttEventReceiver::MqttTopicDesc SchedulerApp::mModeDesc("/ModeIn", "/ModeOut", 0);
 MqttEventReceiver::MqttTopicDesc SchedulerApp::mSetpointDesc("/SetpointIn", "/SetpointOut", 0);
+MqttEventReceiver::MqttTopicDesc SchedulerApp::mDeicingSetpointDesc("/DeiceStpIn", "/DeiceStpOut", 0);
 
 static uint8_t queueModeStorageArea[queueLen * sizeof(char)];
 static uint8_t dailyQueueStorageArea[queueLen * setpointSize];
 static uint8_t weeklyQueueStorageArea[queueLen * setpointSize];
-static uint8_t queueSetpointStorageArea[queueLen * sizeof(int16_t)];
+static uint8_t manualQueueStorageArea[queueLen * sizeof(int16_t)];
+static uint8_t deicingQueueStorageArea[queueLen * sizeof(int16_t)];
 
 static Queue modeQueue = Queue(queueModeStorageArea, queueLen, sizeof(char));
 static Queue dailyQueue = Queue(dailyQueueStorageArea, queueLen, setpointSize);
 static Queue weeklyQueue = Queue(weeklyQueueStorageArea, queueLen, setpointSize);
-static Queue setpointQueue = Queue(queueSetpointStorageArea, queueLen, sizeof(int16_t));
+static Queue manualQueue = Queue(manualQueueStorageArea, queueLen, sizeof(int16_t));
+static Queue deicingQueue = Queue(deicingQueueStorageArea, queueLen, sizeof(int16_t));
 
 SchedulerApp::SchedulerApp() {
 	create("SchedulerApp", 0, 1);
@@ -53,16 +56,18 @@ SchedulerApp::SchedulerApp() {
 	addTopic(mSetpointDesc);
 	MqttEventController::registerReceiver(*this);
 
-	mModifiedDay = 0;
-	mModifiedHours = 0;
-	mModifiedMin = 0;
+	mManualSetpoint = SetpointUnknown;
+	mDeicingSetpoint = SetpointUnknown;
+
 	mMode = ModeUnknown;
 	mSetpoint = {-1, -1, -1, -1};
+	mModifiedSetpoint = {-1, -1, -1, -1};
 
 	mModeQueue = &modeQueue;
     mDailyQueue = &dailyQueue;
     mWeeklyQueue = &weeklyQueue;
-    mSetpointQueue = &setpointQueue;
+    mManualQueue = &manualQueue;
+    mDeicingQueue = &deicingQueue;
 };
 
 void SchedulerApp::run() {
@@ -70,12 +75,13 @@ void SchedulerApp::run() {
 	tzset();
 
 	while (1) {
-		handleModeQueue();
 		handleDailyQueue();
 		handleWeeklyQueue();
-		handleSetpointQueue();
+		handleModeQueue();
+		handleManualQueue();
+		handleDeicingQueue();
+
 		updateSetpoint();
-		updateMqttSetpoint();
 
 		vTaskDelay(pdMS_TO_TICKS(500));
 	}
@@ -100,36 +106,6 @@ void SchedulerApp::setModeUnsafe(scheduler_mode_t mode) {
 	}
 }
 
-void SchedulerApp::setSetpointUnsafe(int16_t value) {
-	if (mSetpoint.value != value) {
-		scheduler_setpoint_t setpoint = getSetpointForCurrentTimeAndMode();
-		setpoint.value = value;
-
-		nvs_handle_t handle;
-		nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &handle);
-		nvs_set_i16(handle, KEY_MANUAL_SETPOINT, value);
-		nvs_commit(handle);
-		nvs_close(handle);
-
-		mSetpoint = setpoint;
-		mModifiedDay = setpoint.day;
-		mModifiedHours = setpoint.hour;
-		mModifiedMin = setpoint.min;
-	}
-}
-
-SchedulerApp::scheduler_setpoint_t SchedulerApp::getManualSetpointFromFile() {
-	mMtx.lock();
-	int16_t val = 0;
-	nvs_handle_t handle;
-	nvs_open(STORAGE_NAMESPACE, NVS_READONLY, &handle);
-	nvs_get_i16(handle, KEY_MANUAL_SETPOINT, &val);
-	nvs_close(handle);
-	scheduler_setpoint_t setpoint = {-1, -1, -1, val};
-	mMtx.unlock();
-	return setpoint;
-}
-
 SchedulerApp::scheduler_mode_t SchedulerApp::getModeFromFile() {
 	mMtx.lock();
 	nvs_handle_t handle;
@@ -141,8 +117,85 @@ SchedulerApp::scheduler_mode_t SchedulerApp::getModeFromFile() {
 	return result;
 }
 
-void SchedulerApp::addSetpointToFileUnsafe(const char* key, scheduler_setpoint_t value) {
+void SchedulerApp::setManualSetpointToFile(int16_t value) {
+	if (mManualSetpoint != value || mManualSetpoint == SetpointUnknown) {
+		nvs_handle_t handle;
+		nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &handle);
+		nvs_set_i16(handle, KEY_MANUAL_SETPOINT, value);
+		nvs_commit(handle);
+		nvs_close(handle);
+		mManualSetpoint = value;
+	}
+}
+
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getManualSetpointFromFile() {
 	mMtx.lock();
+	scheduler_setpoint_t setpoint = {-1, -1, -1, -1};
+	if (mManualSetpoint == SetpointUnknown) {
+		int16_t val = 0;
+		nvs_handle_t handle;
+		nvs_open(STORAGE_NAMESPACE, NVS_READONLY, &handle);
+		nvs_get_i16(handle, KEY_MANUAL_SETPOINT, &val);
+		nvs_close(handle);
+		setpoint.value = val;
+	} else {
+		setpoint.value = mManualSetpoint;
+	}
+	mMtx.unlock();
+	return setpoint;
+}
+
+void SchedulerApp::setDeicingSetpointToFile(int16_t value) {
+	if (mDeicingSetpoint != value || mDeicingSetpoint == SetpointUnknown) {
+		nvs_handle_t handle;
+		nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &handle);
+		nvs_set_i16(handle, KEY_DEICING, value);
+		nvs_commit(handle);
+		nvs_close(handle);
+		mDeicingSetpoint = value;
+	}
+}
+
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getDeicingSetpointFromFile() {
+	mMtx.lock();
+	scheduler_setpoint_t setpoint = {-1, -1, -1, -1};
+	if (mDeicingSetpoint == SetpointUnknown) {
+		int16_t val = 0;
+		nvs_handle_t handle;
+		nvs_open(STORAGE_NAMESPACE, NVS_READONLY, &handle);
+		nvs_get_i16(handle, KEY_DEICING, &val);
+		nvs_close(handle);
+		setpoint.value = val;
+	} else {
+		setpoint.value = mDeicingSetpoint;
+	}
+	mMtx.unlock();
+	return setpoint;
+}
+
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getDailySetpoint(tm timeinfo) {
+	scheduler_setpoint_t result =
+			getSetpointFromFileUnsafe(KEY_DAILY, timeinfo.tm_hour, timeinfo.tm_min);
+	if (result.isEqTime(mModifiedSetpoint)) {
+		result = mModifiedSetpoint;
+	} else {
+		mModifiedSetpoint.reset();
+	}
+	return result;
+}
+
+SchedulerApp::scheduler_setpoint_t SchedulerApp::getWeeklySetpoint(tm timeinfo) {
+	scheduler_setpoint_t result =
+			getSetpointFromFileUnsafe(getWeeklyKey(timeinfo.tm_wday), timeinfo.tm_hour, timeinfo.tm_min);
+	if (result.isEqTime(mModifiedSetpoint)) {
+		result = mModifiedSetpoint;
+	} else {
+		mModifiedSetpoint.reset();
+	}
+	return result;
+}
+
+void SchedulerApp::addSetpointToFileUnsafe(const char* key, scheduler_setpoint_t value) {
 	size_t size = 0;
 	nvs_handle_t handle;
 
@@ -173,28 +226,6 @@ void SchedulerApp::addSetpointToFileUnsafe(const char* key, scheduler_setpoint_t
     nvs_set_blob(handle, key, setpointBlobBfr, size);
     nvs_commit(handle);
     nvs_close(handle);
-    mMtx.unlock();
-}
-
-void SchedulerApp::setDeicingSetpoint(int16_t value) {
-	mMtx.lock();
-	nvs_handle_t handle;
-	nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &handle);
-	nvs_set_u16(handle, KEY_DEICING, value);
-	nvs_commit(handle);
-	nvs_close(handle);
-	mMtx.unlock();
-}
-
-int16_t SchedulerApp::getDeicingSetpointFromFile() {
-	mMtx.lock();
-	nvs_handle_t handle;
-	uint16_t result = 0;
-	nvs_open(STORAGE_NAMESPACE, NVS_READONLY, &handle);
-	nvs_get_u16(handle, KEY_DEICING, &result);
-	nvs_close(handle);
-	mMtx.unlock();
-	return result;
 }
 
 SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointFromFileUnsafe
@@ -247,7 +278,7 @@ SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointFromFileUnsafe
 }
 
 SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForTimeAndMode(tm timeinfo, scheduler_mode_t mode) {
-	scheduler_setpoint_t result = {-1, -1, -1, -1};
+	scheduler_setpoint_t result;
 
 	/**Tmp for debug and test*/
 	timeinfo.tm_hour = 0;
@@ -259,13 +290,13 @@ SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForTimeAndMode(tm ti
 		result = {-1, -1, -1, 0};
 		break;
 	case SchedulerApp::ModeDaily:
-		result = getSetpointFromFileUnsafe(KEY_DAILY, timeinfo.tm_hour, timeinfo.tm_min);
+		result = getDailySetpoint(timeinfo);
 		break;
 	case SchedulerApp::ModeWeekly:
-		result = getSetpointFromFileUnsafe(getWeeklyKey(timeinfo.tm_wday), timeinfo.tm_hour, timeinfo.tm_min);
+		result = getWeeklySetpoint(timeinfo);
 		break;
 	case SchedulerApp::ModeDeicing:
-		result = {-1, -1, -1, getDeicingSetpointFromFile()};
+		result = getDeicingSetpointFromFile();
 		break;
 	case SchedulerApp::ModeManual:
 		result = getManualSetpointFromFile();
@@ -285,11 +316,12 @@ SchedulerApp::scheduler_setpoint_t SchedulerApp::getSetpointForCurrentTimeAndMod
 }
 
 void SchedulerApp::updateSetpoint(){
-	scheduler_setpoint_t currentSetpoint = getSetpointForCurrentTimeAndMode();
-	if (currentSetpoint.day != mModifiedDay
-			|| currentSetpoint.hour != mModifiedHours
-			|| currentSetpoint.min != mModifiedMin) {
-		mSetpoint = currentSetpoint;
+	mSetpoint = getSetpointForCurrentTimeAndMode();
+
+	static int16_t oldSetpoint = 0;
+	if (oldSetpoint != mSetpoint.value) {
+		oldSetpoint = mSetpoint.value;
+		MqttApp::publishMessage(mSetpointDesc, mSetpoint.value);
 	}
 }
 

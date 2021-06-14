@@ -118,7 +118,7 @@ esp_err_t MqttApp::eventHandler(esp_mqtt_event_handle_t event) {
         printf("DATA=%.*s\r\n", event->data_len, event->data);
         break;
     case MQTT_EVENT_ERROR:
-    	EventController::pushEvent(EventId::MqttError, &event);
+//    	EventController::pushEvent(EventId::MqttError, &event);
         ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
         if (event->error_handle->error_type == MQTT_ERROR_TYPE_TCP_TRANSPORT) {
             log_error_if_nonzero("reported from esp-tls", event->error_handle->esp_tls_last_esp_err);

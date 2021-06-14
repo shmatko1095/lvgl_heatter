@@ -36,12 +36,25 @@ public:
 		ModeAmount = ModeUnknown,
 	} scheduler_mode_t;
 
-	typedef struct {
+	struct scheduler_setpoint_t {
 		int16_t day;
 		int16_t hour;
 		int16_t min;
 		int16_t value;
-	} scheduler_setpoint_t;
+
+		bool isEqTime(scheduler_setpoint_t setpoint) {
+			return day == setpoint.day
+					&& hour == setpoint.hour
+					&& min == setpoint.min;
+		}
+
+		void reset() {
+			day = -1;
+			hour = -1;
+			min = -1;
+			value = -1;
+		}
+	};
 
 	SchedulerApp();
 
@@ -60,22 +73,12 @@ public:
 		return mMode;
 	}
 
-	void setDeicingSetpoint(int16_t value);
-
-	void addDailySetpoint(scheduler_setpoint_t* value) {
-		mDailyQueue->send(value);
+	void setDeicingSetpoint(int16_t value) {
+		mDeicingQueue->send((char*)&value);
 	}
 
-	void addWeeklySetpoint(scheduler_setpoint_t* value) {
-		mWeeklyQueue->send(value);
-	}
-
-	void removeDailySetpoint(scheduler_setpoint_t value){};
-
-	void removeWeeklySetpoint(scheduler_setpoint_t value){};
-
-	void setSetpoint(int16_t value) {
-		mSetpointQueue->send(&value);
+	void setManualSetpoint(int16_t value) {
+		mManualQueue->send((char*)&value);
 
 		static bool isSchedulerInited = false;
 		if (!isSchedulerInited) {
@@ -93,6 +96,18 @@ public:
 	int16_t getSetpoint() {
 		return mSetpoint.value;
 	}
+
+	void addDailySetpoint(scheduler_setpoint_t* value) {
+		mDailyQueue->send(value);
+	}
+
+	void addWeeklySetpoint(scheduler_setpoint_t* value) {
+		mWeeklyQueue->send(value);
+	}
+
+	void removeDailySetpoint(scheduler_setpoint_t value){};
+
+	void removeWeeklySetpoint(scheduler_setpoint_t value){};
 
 	static scheduler_mode_t incMode(scheduler_mode_t mode) {
 		scheduler_mode_t result = (SchedulerApp::scheduler_mode_t)((uint8_t)mode + 1);
@@ -113,7 +128,7 @@ private:
 	void mqttSetpointHandler(char* data, size_t dataLen) {
 		if (dataLen > 0 && dataLen < 4) {
 			int16_t value = atoi(data);
-			setSetpoint(value);
+			setManualSetpoint(value);
 		}
 	}
 
@@ -146,25 +161,41 @@ private:
 		mMtx.unlock();
 	}
 
-	void handleSetpointQueue() {
-		int16_t value;
+	void handleManualQueue() {
+		int value;
 		mMtx.lock();
-		while (mSetpointQueue->receive(&value, 0)){
-			setSetpointUnsafe(value);
-			MqttApp::publishMessage(mSetpointDesc, mSetpoint.value);
+		while (mManualQueue->receive(&value, 0)){
+			setManualSetpointToFile(value);
+			mModifiedSetpoint = getSetpointForCurrentTimeAndMode();
+			mModifiedSetpoint.value = value;
 		}
 		mMtx.unlock();
 	}
+
+	void handleDeicingQueue() {
+		int value;
+		mMtx.lock();
+		while (mDeicingQueue->receive(&value, 0)){
+			setDeicingSetpointToFile(value);
+		}
+		mMtx.unlock();
+	}
+
+	scheduler_setpoint_t getDailySetpoint(tm timeinfo);
+
+	scheduler_setpoint_t getWeeklySetpoint(tm timeinfo);
 
 	void addSetpointToFileUnsafe(const char* key, scheduler_setpoint_t value);
 
 	scheduler_setpoint_t getSetpointFromFileUnsafe(const char* key, uint8_t hour, uint8_t min);
 
-	void setSetpointUnsafe(int16_t value);
+	void setManualSetpointToFile(int16_t value);
 
 	scheduler_setpoint_t getManualSetpointFromFile();
 
-	int16_t getDeicingSetpointFromFile();
+	void setDeicingSetpointToFile(int16_t value);
+
+	scheduler_setpoint_t getDeicingSetpointFromFile();
 
 	void setModeUnsafe(scheduler_mode_t mode);
 
@@ -176,31 +207,28 @@ private:
 
 	void updateSetpoint();
 
-	void updateMqttSetpoint() {
-		static int16_t oldSetpoint = 0;
-		if (oldSetpoint != mSetpoint.value) {
-			oldSetpoint = mSetpoint.value;
-			MqttApp::publishMessage(mSetpointDesc, mSetpoint.value);
-		}
-	}
-
 	static char* getWeeklyKey(uint8_t day) {
 		static char key[19];
 		sprintf(key, "%s%d\n", KEY_WEEKLY, day);
 		return key;
 	}
 
-	int16_t mModifiedDay, mModifiedHours, mModifiedMin;
+	int16_t mManualSetpoint;
+	int16_t mDeicingSetpoint;
+
+	scheduler_setpoint_t mModifiedSetpoint;
 	scheduler_setpoint_t mSetpoint;
 	scheduler_mode_t mMode;
 	Queue* mModeQueue;
 	Queue* mDailyQueue;
 	Queue* mWeeklyQueue;
-	Queue* mSetpointQueue;
+	Queue* mManualQueue;
+	Queue* mDeicingQueue;
 	Mutex mMtx;
 
 	static MqttEventReceiver::MqttTopicDesc mModeDesc;
 	static MqttEventReceiver::MqttTopicDesc mSetpointDesc;
+	static MqttEventReceiver::MqttTopicDesc mDeicingSetpointDesc;
 };
 
 #endif /* SCHEDULERAPP_H_ */
