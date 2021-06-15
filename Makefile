@@ -1574,19 +1574,6 @@ __idf_lvgl/fast:
 .PHONY : __idf_lvgl/fast
 
 #=============================================================================
-# Target rules for targets named __idf_lv_examples
-
-# Build rule for target.
-__idf_lv_examples: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 __idf_lv_examples
-.PHONY : __idf_lv_examples
-
-# fast build rule for target.
-__idf_lv_examples/fast:
-	$(MAKE) -f esp-idf/lv_examples/CMakeFiles/__idf_lv_examples.dir/build.make esp-idf/lv_examples/CMakeFiles/__idf_lv_examples.dir/build
-.PHONY : __idf_lv_examples/fast
-
-#=============================================================================
 # Target rules for targets named __idf_lvgl_esp32_drivers
 
 # Build rule for target.
@@ -1747,7 +1734,6 @@ help:
 	@echo "... __idf_wifi_provisioning"
 	@echo "... __idf_main"
 	@echo "... __idf_lvgl"
-	@echo "... __idf_lv_examples"
 	@echo "... __idf_lvgl_esp32_drivers"
 	@echo "... project_elf_src_esp32.obj"
 	@echo "... project_elf_src_esp32.i"
