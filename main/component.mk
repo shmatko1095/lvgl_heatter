@@ -2,7 +2,3 @@
 # "main" pseudo-component makefile.
 #
 # (Uses default behaviour of compiling all source files in directory, adding 'include' to include path.)
-
-CFLAGS+= -DLV_LVGL_H_INCLUDE_SIMPLE
-CXXFLAGS+= -DLV_LVGL_H_INCLUDE_SIMPLE 
-COMPONENT_EMBED_TXTFILES := ConnectionApp/certs/coap_ca.pem ConnectionApp/certs/coap_client.crt ConnectionApp/certs/coap_client.key
